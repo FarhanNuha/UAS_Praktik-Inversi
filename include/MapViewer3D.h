@@ -40,8 +40,9 @@ private:
     
     void draw3DGrid(QPainter &painter);
     void draw3DStations(QPainter &painter);
-    void draw3DAxes(QPainter &painter);
-    QPointF project3D(double x, double y, double z, int centerX, int centerY, double scale) const;
+    void draw3DAxesWithLabels(QPainter &painter);
+    void drawCoordinateIndicators(QPainter &painter);
+    QPointF project3D(double x, double y, double z, int centerX, int centerY, double scaleX, double scaleY, double scaleZ) const;
     void resetView();
 };
 

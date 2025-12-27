@@ -1,5 +1,6 @@
 #include "VelocityModelWidget.h"
 #include <QVBoxLayout>
+#include <QHBoxLayout>
 #include <QFormLayout>
 #include <QGroupBox>
 #include <QLabel>
@@ -8,6 +9,362 @@
 #include <QFile>
 #include <QTextStream>
 #include <QDoubleValidator>
+#include <QPainter>
+#include <QWheelEvent>
+#include <QMouseEvent>
+#include <QSplitter>
+#include <cmath>
+
+// ============================================================================
+// Velocity1DPlot Implementation
+// ============================================================================
+
+Velocity1DPlot::Velocity1DPlot(QWidget *parent)
+    : QWidget(parent), hasData(false)
+{
+    setMinimumSize(300, 400);
+}
+
+Velocity1DPlot::~Velocity1DPlot() {
+}
+
+void Velocity1DPlot::setData(const QVector<VelocityLayer1D> &layers) {
+    velocityLayers = layers;
+    hasData = !layers.isEmpty();
+    update();
+}
+
+void Velocity1DPlot::clearData() {
+    velocityLayers.clear();
+    hasData = false;
+    update();
+}
+
+void Velocity1DPlot::paintEvent(QPaintEvent *event) {
+    Q_UNUSED(event);
+    
+    QPainter painter(this);
+    painter.setRenderHint(QPainter::Antialiasing);
+    
+    // Background
+    painter.fillRect(rect(), Qt::white);
+    painter.setPen(QPen(Qt::gray, 1));
+    painter.drawRect(rect().adjusted(0, 0, -1, -1));
+    
+    if (!hasData) {
+        painter.drawText(rect(), Qt::AlignCenter, "Load 1D model to display plot");
+        return;
+    }
+    
+    // Margins
+    int leftMargin = 60;
+    int rightMargin = 20;
+    int topMargin = 30;
+    int bottomMargin = 50;
+    
+    int plotWidth = width() - leftMargin - rightMargin;
+    int plotHeight = height() - topMargin - bottomMargin;
+    
+    // Find ranges
+    double minVp = 1e9, maxVp = -1e9;
+    double maxDepth = 0;
+    
+    for (const auto &layer : velocityLayers) {
+        minVp = std::min(minVp, layer.vp);
+        maxVp = std::max(maxVp, layer.vp);
+        maxDepth = std::max(maxDepth, layer.maxDepth);
+    }
+    
+    // Add padding to ranges
+    double vpRange = maxVp - minVp;
+    minVp -= vpRange * 0.1;
+    maxVp += vpRange * 0.1;
+    
+    // Draw axes
+    painter.setPen(QPen(Qt::black, 2));
+    painter.drawLine(leftMargin, topMargin, leftMargin, height() - bottomMargin);
+    painter.drawLine(leftMargin, height() - bottomMargin, width() - rightMargin, height() - bottomMargin);
+    
+    // Draw title
+    QFont titleFont = painter.font();
+    titleFont.setBold(true);
+    titleFont.setPointSize(11);
+    painter.setFont(titleFont);
+    painter.drawText(QRect(0, 5, width(), 20), Qt::AlignCenter, "1D Velocity Model");
+    
+    // Draw Y-axis label (Depth)
+    painter.save();
+    painter.translate(15, height() / 2);
+    painter.rotate(-90);
+    painter.drawText(QRect(-80, -10, 160, 20), Qt::AlignCenter, "Depth (km)");
+    painter.restore();
+    
+    // Draw X-axis label (Vp)
+    painter.drawText(QRect(0, height() - 25, width(), 20), Qt::AlignCenter, "Vp (km/s)");
+    
+    QFont labelFont = painter.font();
+    labelFont.setPointSize(9);
+    painter.setFont(labelFont);
+    
+    // Draw Y-axis ticks and labels (Depth)
+    int numYTicks = 5;
+    for (int i = 0; i <= numYTicks; ++i) {
+        double depth = (maxDepth / numYTicks) * i;
+        int y = topMargin + (plotHeight * i / numYTicks);
+        
+        painter.setPen(QPen(Qt::black, 1));
+        painter.drawLine(leftMargin - 5, y, leftMargin, y);
+        
+        QString label = QString::number(depth, 'f', 1);
+        painter.drawText(QRect(0, y - 10, leftMargin - 10, 20), Qt::AlignRight | Qt::AlignVCenter, label);
+        
+        // Grid line
+        painter.setPen(QPen(QColor(220, 220, 220), 1, Qt::DotLine));
+        painter.drawLine(leftMargin, y, width() - rightMargin, y);
+    }
+    
+    // Draw X-axis ticks and labels (Vp)
+    int numXTicks = 5;
+    for (int i = 0; i <= numXTicks; ++i) {
+        double vp = minVp + (maxVp - minVp) * i / numXTicks;
+        int x = leftMargin + (plotWidth * i / numXTicks);
+        
+        painter.setPen(QPen(Qt::black, 1));
+        painter.drawLine(x, height() - bottomMargin, x, height() - bottomMargin + 5);
+        
+        QString label = QString::number(vp, 'f', 1);
+        painter.drawText(QRect(x - 30, height() - bottomMargin + 10, 60, 20), Qt::AlignCenter, label);
+        
+        // Grid line
+        painter.setPen(QPen(QColor(220, 220, 220), 1, Qt::DotLine));
+        painter.drawLine(x, topMargin, x, height() - bottomMargin);
+    }
+    
+    // Draw stairs plot
+    painter.setPen(QPen(QColor(0, 100, 200), 3));
+    
+    double prevDepth = 0;
+    for (int i = 0; i < velocityLayers.size(); ++i) {
+        double vp = velocityLayers[i].vp;
+        double depth = velocityLayers[i].maxDepth;
+        
+        // Calculate pixel positions
+        int x1 = leftMargin + static_cast<int>((vp - minVp) / (maxVp - minVp) * plotWidth);
+        int y1 = topMargin + static_cast<int>((prevDepth / maxDepth) * plotHeight);
+        int y2 = topMargin + static_cast<int>((depth / maxDepth) * plotHeight);
+        
+        // Horizontal line (constant velocity)
+        painter.drawLine(x1, y1, x1, y2);
+        
+        // Vertical line to next layer
+        if (i < velocityLayers.size() - 1) {
+            double nextVp = velocityLayers[i + 1].vp;
+            int x2 = leftMargin + static_cast<int>((nextVp - minVp) / (maxVp - minVp) * plotWidth);
+            painter.drawLine(x1, y2, x2, y2);
+        }
+        
+        prevDepth = depth;
+    }
+}
+
+// ============================================================================
+// Velocity3DPlot Implementation
+// ============================================================================
+
+Velocity3DPlot::Velocity3DPlot(QWidget *parent)
+    : QWidget(parent), hasData(false), rotationX(30.0), rotationZ(45.0),
+      zoomFactor(1.0), isRotating(false)
+{
+    setMinimumSize(400, 400);
+    setMouseTracking(true);
+}
+
+Velocity3DPlot::~Velocity3DPlot() {
+}
+
+void Velocity3DPlot::setData(const QVector<VelocityPoint3D> &points) {
+    velocityPoints = points;
+    hasData = !points.isEmpty();
+    update();
+}
+
+void Velocity3DPlot::clearData() {
+    velocityPoints.clear();
+    hasData = false;
+    update();
+}
+
+void Velocity3DPlot::paintEvent(QPaintEvent *event) {
+    Q_UNUSED(event);
+    
+    QPainter painter(this);
+    painter.setRenderHint(QPainter::Antialiasing);
+    
+    // Background
+    painter.fillRect(rect(), QColor(245, 245, 245));
+    
+    if (!hasData) {
+        painter.drawText(rect(), Qt::AlignCenter, "Load 3D model to display visualization");
+        return;
+    }
+    
+    // Find ranges
+    double minX = 1e9, maxX = -1e9;
+    double minY = 1e9, maxY = -1e9;
+    double minZ = 1e9, maxZ = -1e9;
+    double minVp = 1e9, maxVp = -1e9;
+    
+    for (const auto &pt : velocityPoints) {
+        minX = std::min(minX, pt.x);
+        maxX = std::max(maxX, pt.x);
+        minY = std::min(minY, pt.y);
+        maxY = std::max(maxY, pt.y);
+        minZ = std::min(minZ, pt.z);
+        maxZ = std::max(maxZ, pt.z);
+        minVp = std::min(minVp, pt.vp);
+        maxVp = std::max(maxVp, pt.vp);
+    }
+    
+    // Draw title
+    painter.setPen(Qt::black);
+    QFont titleFont = painter.font();
+    titleFont.setBold(true);
+    titleFont.setPointSize(11);
+    painter.setFont(titleFont);
+    painter.drawText(QRect(0, 5, width(), 20), Qt::AlignCenter, "3D Velocity Model");
+    
+    // Draw points with colors
+    for (const auto &pt : velocityPoints) {
+        // Normalize coordinates to [0, 1]
+        double nx = (pt.x - minX) / (maxX - minX);
+        double ny = (pt.y - minY) / (maxY - minY);
+        double nz = (pt.z - minZ) / (maxZ - minZ);
+        
+        QPointF screenPos = project3D(nx, ny, nz);
+        
+        QColor color = getColorForVelocity(pt.vp, minVp, maxVp);
+        painter.setBrush(color);
+        painter.setPen(Qt::NoPen);
+        painter.drawEllipse(screenPos, 3, 3);
+    }
+    
+    // Draw colorbar
+    int barWidth = 30;
+    int barHeight = 200;
+    int barX = width() - 60;
+    int barY = height() / 2 - barHeight / 2;
+    
+    for (int i = 0; i < barHeight; ++i) {
+        double t = 1.0 - (double)i / barHeight;
+        double vp = minVp + t * (maxVp - minVp);
+        QColor color = getColorForVelocity(vp, minVp, maxVp);
+        
+        painter.setPen(color);
+        painter.drawLine(barX, barY + i, barX + barWidth, barY + i);
+    }
+    
+    painter.setPen(Qt::black);
+    painter.setBrush(Qt::NoBrush);
+    painter.drawRect(barX, barY, barWidth, barHeight);
+    
+    // Colorbar labels
+    QFont labelFont = painter.font();
+    labelFont.setPointSize(8);
+    painter.setFont(labelFont);
+    
+    painter.drawText(QRect(barX - 50, barY - 15, 80, 15), Qt::AlignCenter, QString::number(maxVp, 'f', 1));
+    painter.drawText(QRect(barX - 50, barY + barHeight, 80, 15), Qt::AlignCenter, QString::number(minVp, 'f', 1));
+    painter.drawText(QRect(barX - 50, barY + barHeight + 15, 80, 15), Qt::AlignCenter, "Vp (km/s)");
+    
+    // Draw controls hint
+    painter.setPen(QColor(100, 100, 100));
+    painter.drawText(10, height() - 10, "Drag: Rotate | Scroll: Zoom");
+}
+
+QColor Velocity3DPlot::getColorForVelocity(double vp, double minVp, double maxVp) const {
+    // Red-White-Blue colormap
+    double t = (vp - minVp) / (maxVp - minVp);
+    
+    int r, g, b;
+    if (t < 0.5) {
+        // Blue to White
+        double s = t * 2.0;
+        r = static_cast<int>(0 + s * 255);
+        g = static_cast<int>(0 + s * 255);
+        b = 255;
+    } else {
+        // White to Red
+        double s = (t - 0.5) * 2.0;
+        r = 255;
+        g = static_cast<int>(255 - s * 255);
+        b = static_cast<int>(255 - s * 255);
+    }
+    
+    return QColor(r, g, b);
+}
+
+QPointF Velocity3DPlot::project3D(double x, double y, double z) const {
+    int centerX = width() / 2;
+    int centerY = height() / 2;
+    double scale = 300.0 * zoomFactor;
+    
+    // Rotate around Z-axis
+    double radZ = rotationZ * M_PI / 180.0;
+    double x1 = x * cos(radZ) - y * sin(radZ);
+    double y1 = x * sin(radZ) + y * cos(radZ);
+    
+    // Rotate around X-axis
+    double radX = rotationX * M_PI / 180.0;
+    double y2 = y1 * cos(radX) - z * sin(radX);
+    double z2 = y1 * sin(radX) + z * cos(radX);
+    
+    double isoX = x1 * scale;
+    double isoY = y2 * scale * 0.5 - z2 * scale;
+    
+    return QPointF(centerX + isoX, centerY + isoY);
+}
+
+void Velocity3DPlot::wheelEvent(QWheelEvent *event) {
+    double delta = event->angleDelta().y() > 0 ? 1.1 : 0.9;
+    zoomFactor *= delta;
+    zoomFactor = std::max(0.3, std::min(3.0, zoomFactor));
+    update();
+}
+
+void Velocity3DPlot::mousePressEvent(QMouseEvent *event) {
+    if (event->button() == Qt::LeftButton) {
+        isRotating = true;
+        lastMousePos = event->pos();
+        setCursor(Qt::ClosedHandCursor);
+    }
+}
+
+void Velocity3DPlot::mouseMoveEvent(QMouseEvent *event) {
+    if (isRotating) {
+        QPoint delta = event->pos() - lastMousePos;
+        rotationZ += delta.x() * 0.5;
+        rotationX += delta.y() * 0.5;
+        
+        rotationX = std::max(-89.0, std::min(89.0, rotationX));
+        
+        while (rotationZ < 0) rotationZ += 360;
+        while (rotationZ >= 360) rotationZ -= 360;
+        
+        lastMousePos = event->pos();
+        update();
+    }
+}
+
+void Velocity3DPlot::mouseReleaseEvent(QMouseEvent *event) {
+    if (event->button() == Qt::LeftButton) {
+        isRotating = false;
+        setCursor(Qt::ArrowCursor);
+    }
+}
+
+// ============================================================================
+// VelocityModelWidget Implementation
+// ============================================================================
 
 VelocityModelWidget::VelocityModelWidget(QWidget *parent)
     : QWidget(parent)
@@ -41,7 +398,7 @@ void VelocityModelWidget::setupUI() {
     // Model stack
     modelStack = new QStackedWidget(this);
     
-    // Homogeneous model widget
+    // ===== Homogeneous model widget =====
     homogeneousWidget = new QWidget();
     QFormLayout *homogLayout = new QFormLayout(homogeneousWidget);
     
@@ -61,7 +418,7 @@ void VelocityModelWidget::setupUI() {
     
     modelStack->addWidget(homogeneousWidget);
     
-    // 1D model widget
+    // ===== 1D model widget =====
     model1DWidget = new QWidget();
     QVBoxLayout *model1DLayout = new QVBoxLayout(model1DWidget);
     
@@ -78,15 +435,26 @@ void VelocityModelWidget::setupUI() {
     format1DLabel->setWordWrap(true);
     model1DLayout->addWidget(format1DLabel);
     
+    // Splitter for preview and plot
+    QSplitter *splitter1D = new QSplitter(Qt::Horizontal, this);
+    
     model1DPreview = new QTextEdit(this);
     model1DPreview->setReadOnly(true);
-    model1DPreview->setMaximumHeight(150);
-    model1DPreview->setPlaceholderText("File preview akan tampil di sini...");
-    model1DLayout->addWidget(model1DPreview);
+    model1DPreview->setMaximumHeight(250);
+    model1DPreview->setPlaceholderText("File preview...");
+    splitter1D->addWidget(model1DPreview);
+    
+    velocity1DPlot = new Velocity1DPlot(this);
+    splitter1D->addWidget(velocity1DPlot);
+    
+    splitter1D->setStretchFactor(0, 1);
+    splitter1D->setStretchFactor(1, 2);
+    
+    model1DLayout->addWidget(splitter1D);
     
     modelStack->addWidget(model1DWidget);
     
-    // 3D model widget
+    // ===== 3D model widget =====
     model3DWidget = new QWidget();
     QVBoxLayout *model3DLayout = new QVBoxLayout(model3DWidget);
     
@@ -96,23 +464,33 @@ void VelocityModelWidget::setupUI() {
     model3DLayout->addWidget(load3DButton);
     
     QLabel *format3DLabel = new QLabel(
-        "<b>Format File 3D:</b> 4 kolom (X, Y, Z, Vp)<br>"
+        "<b>Format File 3D:</b> Tensor format (X, Y, Z, Vp)<br>"
         "Contoh: examples/velocity_model_3d.txt",
         this
     );
     format3DLabel->setWordWrap(true);
     model3DLayout->addWidget(format3DLabel);
     
+    // Splitter for preview and plot
+    QSplitter *splitter3D = new QSplitter(Qt::Horizontal, this);
+    
     model3DPreview = new QTextEdit(this);
     model3DPreview->setReadOnly(true);
-    model3DPreview->setMaximumHeight(150);
-    model3DPreview->setPlaceholderText("File preview akan tampil di sini...");
-    model3DLayout->addWidget(model3DPreview);
+    model3DPreview->setMaximumHeight(250);
+    model3DPreview->setPlaceholderText("File preview...");
+    splitter3D->addWidget(model3DPreview);
+    
+    velocity3DPlot = new Velocity3DPlot(this);
+    splitter3D->addWidget(velocity3DPlot);
+    
+    splitter3D->setStretchFactor(0, 1);
+    splitter3D->setStretchFactor(1, 2);
+    
+    model3DLayout->addWidget(splitter3D);
     
     modelStack->addWidget(model3DWidget);
     
     mainLayout->addWidget(modelStack);
-    mainLayout->addStretch();
 }
 
 void VelocityModelWidget::onModelTypeChanged(int index) {
@@ -141,7 +519,7 @@ void VelocityModelWidget::onLoad1DModel() {
     QString content = in.readAll();
     file.close();
     
-    // Validate format (simple check)
+    // Parse data
     QStringList lines = content.split('\n', Qt::SkipEmptyParts);
     if (lines.size() < 2) {
         QMessageBox::warning(this, "Error", "File format tidak valid. Minimal 2 baris (header + data).");
@@ -151,17 +529,34 @@ void VelocityModelWidget::onLoad1DModel() {
     // Check header
     QString header = lines[0].trimmed().toLower();
     if (!header.contains("vp") || !header.contains("maxdepth")) {
-        QMessageBox::warning(this, "Error", 
-            "Header tidak sesuai format. Expected: Vp, MaxDepth");
+        QMessageBox::warning(this, "Error", "Header tidak sesuai format. Expected: Vp, MaxDepth");
+        return;
+    }
+    
+    // Parse layers
+    model1DData.clear();
+    for (int i = 1; i < lines.size(); ++i) {
+        QStringList parts = lines[i].split(',');
+        if (parts.size() >= 2) {
+            VelocityLayer1D layer;
+            layer.vp = parts[0].trimmed().toDouble();
+            layer.maxDepth = parts[1].trimmed().toDouble();
+            model1DData.append(layer);
+        }
+    }
+    
+    if (model1DData.isEmpty()) {
+        QMessageBox::warning(this, "Error", "No valid data found in file");
         return;
     }
     
     model1DFilePath = fileName;
     model1DPreview->setPlainText(content);
+    velocity1DPlot->setData(model1DData);
     
     QMessageBox::information(this, "Success", 
-        QString("1D model loaded successfully!\nFile: %1\nLines: %2")
-            .arg(fileName).arg(lines.size()));
+        QString("1D model loaded successfully!\nFile: %1\nLayers: %2")
+            .arg(fileName).arg(model1DData.size()));
 }
 
 void VelocityModelWidget::onLoad3DModel() {
@@ -183,45 +578,77 @@ void VelocityModelWidget::onLoad3DModel() {
     }
     
     QTextStream in(&file);
-    QString content;
+    QString previewContent;
     int lineCount = 0;
-    int previewLines = 100; // Only show first 100 lines in preview
+    int previewLines = 50;
     
-    while (!in.atEnd() && lineCount < previewLines) {
-        content += in.readLine() + "\n";
+    // Parse data
+    QString header = in.readLine();
+    previewContent += header + "\n";
+    lineCount++;
+    
+    model3DData.clear();
+    
+    while (!in.atEnd()) {
+        QString line = in.readLine();
+        
+        if (lineCount < previewLines) {
+            previewContent += line + "\n";
+        }
+        
+        QStringList parts = line.split(',');
+        if (parts.size() >= 4) {
+            VelocityPoint3D point;
+            point.x = parts[0].trimmed().toDouble();
+            point.y = parts[1].trimmed().toDouble();
+            point.z = parts[2].trimmed().toDouble();
+            point.vp = parts[3].trimmed().toDouble();
+            model3DData.append(point);
+        }
+        
         lineCount++;
-    }
-    
-    if (!in.atEnd()) {
-        content += "\n... (file continues)\n";
     }
     
     file.close();
     
-    // Validate format (simple check)
-    QStringList lines = content.split('\n', Qt::SkipEmptyParts);
-    if (lines.size() < 2) {
-        QMessageBox::warning(this, "Error", "File format tidak valid. Minimal 2 baris (header + data).");
-        return;
+    if (lineCount > previewLines) {
+        previewContent += QString("\n... (%1 more lines)\n").arg(lineCount - previewLines);
     }
     
-    // Check header
-    QString header = lines[0].trimmed().toLower();
-    if (!header.contains("x") || !header.contains("y") || 
-        !header.contains("z") || !header.contains("vp")) {
-        QMessageBox::warning(this, "Error", 
-            "Header tidak sesuai format. Expected: X, Y, Z, Vp");
+    if (model3DData.isEmpty()) {
+        QMessageBox::warning(this, "Error", "No valid data found in file");
         return;
     }
     
     model3DFilePath = fileName;
-    model3DPreview->setPlainText(content);
+    model3DPreview->setPlainText(previewContent);
+    velocity3DPlot->setData(model3DData);
     
     QMessageBox::information(this, "Success", 
-        QString("3D model loaded successfully!\nFile: %1")
-            .arg(fileName));
+        QString("3D model loaded successfully!\nFile: %1\nPoints: %2")
+            .arg(fileName).arg(model3DData.size()));
 }
 
 QString VelocityModelWidget::getModelType() const {
     return modelTypeCombo->currentText();
+}
+
+double VelocityModelWidget::getHomogeneousVp() const {
+    return vpHomogeneous->text().toDouble();
+}
+
+QString VelocityModelWidget::get1DModelPath() const {
+    return model1DFilePath;
+}
+
+QString VelocityModelWidget::get3DModelPath() const {
+    return model3DFilePath;
+}
+
+QVector<VelocityLayer1D> VelocityModelWidget::get1DModelData() const {
+    return model1DData;
+}
+
+QVector<VelocityPoint3D> VelocityModelWidget::get3DModelData() const {
+    return model3DData;
 }

@@ -1,0 +1,35 @@
+file(REMOVE_RECURSE
+  "CMakeFiles/bismillah_autogen.dir/AutogenUsed.txt"
+  "CMakeFiles/bismillah_autogen.dir/ParseCache.txt"
+  "bismillah_autogen"
+  "CMakeFiles/bismillah.dir/bismillah_autogen/EWIEGA46WW/qrc_app.cpp.o"
+  "CMakeFiles/bismillah.dir/bismillah_autogen/EWIEGA46WW/qrc_app.cpp.o.d"
+  "CMakeFiles/bismillah.dir/bismillah_autogen/mocs_compilation.cpp.o"
+  "CMakeFiles/bismillah.dir/bismillah_autogen/mocs_compilation.cpp.o.d"
+  "CMakeFiles/bismillah.dir/src/CalculatingConditionWidget.cpp.o"
+  "CMakeFiles/bismillah.dir/src/CalculatingConditionWidget.cpp.o.d"
+  "CMakeFiles/bismillah.dir/src/DataInputWidget.cpp.o"
+  "CMakeFiles/bismillah.dir/src/DataInputWidget.cpp.o.d"
+  "CMakeFiles/bismillah.dir/src/MainWindow.cpp.o"
+  "CMakeFiles/bismillah.dir/src/MainWindow.cpp.o.d"
+  "CMakeFiles/bismillah.dir/src/MapViewer2D.cpp.o"
+  "CMakeFiles/bismillah.dir/src/MapViewer2D.cpp.o.d"
+  "CMakeFiles/bismillah.dir/src/MapViewer3D.cpp.o"
+  "CMakeFiles/bismillah.dir/src/MapViewer3D.cpp.o.d"
+  "CMakeFiles/bismillah.dir/src/MethodWidget.cpp.o"
+  "CMakeFiles/bismillah.dir/src/MethodWidget.cpp.o.d"
+  "CMakeFiles/bismillah.dir/src/ResultWidget.cpp.o"
+  "CMakeFiles/bismillah.dir/src/ResultWidget.cpp.o.d"
+  "CMakeFiles/bismillah.dir/src/VelocityModelWidget.cpp.o"
+  "CMakeFiles/bismillah.dir/src/VelocityModelWidget.cpp.o.d"
+  "CMakeFiles/bismillah.dir/src/main.cpp.o"
+  "CMakeFiles/bismillah.dir/src/main.cpp.o.d"
+  "bismillah"
+  "bismillah.pdb"
+  "bismillah_autogen/EWIEGA46WW/qrc_app.cpp"
+)
+
+# Per-language clean rules from dependency scanning.
+foreach(lang CXX)
+  include(CMakeFiles/bismillah.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()

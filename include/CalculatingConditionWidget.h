@@ -30,12 +30,10 @@ private:
     QLineEdit *xMaxEdit;
     QLineEdit *yMinEdit;
     QLineEdit *yMaxEdit;
-    QLineEdit *zMinEdit;
-    QLineEdit *zMaxEdit;
+    QLineEdit *depthMinEdit;
+    QLineEdit *depthMaxEdit;
     
-    QLineEdit *dxEdit;
-    QLineEdit *dyEdit;
-    QLineEdit *dzEdit;
+    QLineEdit *gridSpacingEdit;
     
     QPushButton *commitButton;
 };

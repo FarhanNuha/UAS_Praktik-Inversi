@@ -1,0 +1,20 @@
+{
+	"BUILD_DIR" : "/home/farhan/git/inversi/build/bismillah_autogen",
+	"CMAKE_BINARY_DIR" : "/home/farhan/git/inversi/build",
+	"CMAKE_CURRENT_BINARY_DIR" : "/home/farhan/git/inversi/build",
+	"CMAKE_CURRENT_SOURCE_DIR" : "/home/farhan/git/inversi",
+	"CMAKE_SOURCE_DIR" : "/home/farhan/git/inversi",
+	"GENERATOR" : "Unix Makefiles",
+	"INCLUDE_DIR" : "/home/farhan/git/inversi/build/bismillah_autogen/include",
+	"INPUTS" : [ "/home/farhan/git/inversi/maps/world.png" ],
+	"LOCK_FILE" : "/home/farhan/git/inversi/build/CMakeFiles/bismillah_autogen.dir/AutoRcc_app_EWIEGA46WW_Lock.lock",
+	"MULTI_CONFIG" : false,
+	"OPTIONS" : [ "-name", "app" ],
+	"OUTPUT_CHECKSUM" : "EWIEGA46WW",
+	"OUTPUT_NAME" : "qrc_app.cpp",
+	"RCC_EXECUTABLE" : "/usr/lib/qt6/libexec/rcc",
+	"RCC_LIST_OPTIONS" : [ "--list" ],
+	"SETTINGS_FILE" : "/home/farhan/git/inversi/build/CMakeFiles/bismillah_autogen.dir/AutoRcc_app_EWIEGA46WW_Used.txt",
+	"SOURCE" : "/home/farhan/git/inversi/app.qrc",
+	"VERBOSITY" : 0
+}

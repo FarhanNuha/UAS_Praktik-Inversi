@@ -23,14 +23,14 @@ void DataInputWidget::setupUI() {
     mainLayout->setContentsMargins(10, 10, 10, 10);
     
     // Load file button
-    loadButton = new QPushButton("Load Station Data File", this);
+    loadButton = new QPushButton("Load Data Arrival Time", this);
     loadButton->setMinimumHeight(35);
     connect(loadButton, &QPushButton::clicked, this, &DataInputWidget::onLoadDataFile);
     mainLayout->addWidget(loadButton);
     
     // Format info
     QLabel *formatLabel = new QLabel(
-        "<b>Format:</b> Stasiun, Latitude, Longitude, Arrival Time UTC (hh:mm:ss)<br>"
+        "<b>Format:</b> Stasiun, Latitude, Longitude, Arrival Time UTC(hh:mm:ss)<br>"
         "<i>Contoh: examples/station_data.txt</i>",
         this
     );
@@ -51,11 +51,11 @@ void DataInputWidget::setupUI() {
     // Button row
     QHBoxLayout *buttonLayout = new QHBoxLayout();
     
-    addRowButton = new QPushButton("Add Row", this);
+    addRowButton = new QPushButton("Tambah", this);
     connect(addRowButton, &QPushButton::clicked, this, &DataInputWidget::onAddRow);
     buttonLayout->addWidget(addRowButton);
     
-    deleteRowButton = new QPushButton("Delete Row", this);
+    deleteRowButton = new QPushButton("Hapus", this);
     connect(deleteRowButton, &QPushButton::clicked, this, &DataInputWidget::onDeleteRow);
     buttonLayout->addWidget(deleteRowButton);
     

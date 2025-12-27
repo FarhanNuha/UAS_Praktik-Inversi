@@ -6,6 +6,7 @@
 #include <QStackedWidget>
 #include <QLineEdit>
 #include <QScrollArea>
+#include <QCheckBox>
 
 class MethodWidget : public QWidget {
     Q_OBJECT
@@ -16,16 +17,21 @@ public:
     
     QString getApproach() const;
     QString getMethod() const;
+    QString getGlobalSubMethod() const;
 
 private slots:
     void onApproachChanged(int index);
     void onLocalMethodChanged(int index);
     void onGlobalMethodChanged(int index);
+    void onSAVariantChanged(int index);
+    void onGAVariantChanged(int index);
 
 private:
     void setupUI();
     void createLocalMethodWidgets();
     void createGlobalMethodWidgets();
+    void createSimulatedAnnealingWidgets();
+    void createGeneticAlgorithmWidgets();
     
     QComboBox *approachCombo;
     QStackedWidget *methodStack;
@@ -49,6 +55,21 @@ private:
     QWidget *gridSearchParams;
     QWidget *simulatedAnnealingParams;
     QWidget *geneticAlgorithmParams;
+    
+    // Simulated Annealing sub-widgets
+    QComboBox *saVariantCombo;
+    QStackedWidget *saVariantStack;
+    QWidget *simpleSAParams;
+    QWidget *metropolisSAParams;
+    QWidget *cauchySAParams;
+    
+    // Genetic Algorithm sub-widgets
+    QCheckBox *gaRealCodedCheck;
+    QComboBox *gaVariantCombo;
+    QStackedWidget *gaVariantStack;
+    QWidget *standardGAParams;
+    QWidget *steadyStateGAParams;
+    QWidget *spea2Params;
 };
 
 #endif // METHODWIDGET_H

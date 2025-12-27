@@ -50,16 +50,19 @@ void MapViewer3D::paintEvent(QPaintEvent *event) {
         return;
     }
     
-    // Draw 3D axes
-    draw3DAxes(painter);
+    // Draw 3D axes with labels
+    draw3DAxesWithLabels(painter);
     
-    // Draw 3D grid and geometry
+    // Draw 3D grid
     draw3DGrid(painter);
     
     // Draw stations if loaded
     if (stationsLoaded) {
         draw3DStations(painter);
     }
+    
+    // Draw coordinate indicators
+    drawCoordinateIndicators(painter);
     
     // Draw control info overlay
     painter.resetTransform();
@@ -82,128 +85,114 @@ void MapViewer3D::paintEvent(QPaintEvent *event) {
 void MapViewer3D::draw3DGrid(QPainter &painter) {
     int centerX = width() / 2;
     int centerY = height() / 2 + 20;
-    double scale = 50 * zoomFactor;
     
-    // Calculate grid dimensions
+    // Calculate actual dimensions
     double xRange = currentBoundary.xMax - currentBoundary.xMin;
     double yRange = currentBoundary.yMax - currentBoundary.yMin;
-    double zRange = currentBoundary.zMax - currentBoundary.zMin;
+    double zRange = currentBoundary.depthMax - currentBoundary.depthMin;
     
-    int nX = static_cast<int>(xRange / currentBoundary.dx) + 1;
-    int nY = static_cast<int>(yRange / currentBoundary.dy) + 1;
-    int nZ = static_cast<int>(zRange / currentBoundary.dz) + 1;
+    // Calculate grid count
+    int nX = static_cast<int>(xRange / currentBoundary.gridSpacing) + 1;
+    int nY = static_cast<int>(yRange / currentBoundary.gridSpacing) + 1;
+    int nZ = static_cast<int>(zRange / currentBoundary.gridSpacing) + 1;
+    
+    // Calculate scales to make grid proportional
+    double maxRange = std::max({xRange, yRange, zRange});
+    double baseScale = 300.0 / maxRange * zoomFactor;
+    
+    double scaleX = baseScale * (xRange / maxRange);
+    double scaleY = baseScale * (yRange / maxRange);
+    double scaleZ = baseScale * (zRange / maxRange);
     
     // Draw grid box edges
     painter.setPen(QPen(Qt::darkGray, 2));
     
-    // Bottom face
-    painter.drawLine(project3D(0, 0, 0, centerX, centerY, scale), 
-                    project3D(nX, 0, 0, centerX, centerY, scale));
-    painter.drawLine(project3D(nX, 0, 0, centerX, centerY, scale), 
-                    project3D(nX, nY, 0, centerX, centerY, scale));
-    painter.drawLine(project3D(nX, nY, 0, centerX, centerY, scale), 
-                    project3D(0, nY, 0, centerX, centerY, scale));
-    painter.drawLine(project3D(0, nY, 0, centerX, centerY, scale), 
-                    project3D(0, 0, 0, centerX, centerY, scale));
+    // Bottom face (depth = 0)
+    painter.drawLine(project3D(0, 0, 0, centerX, centerY, scaleX, scaleY, scaleZ), 
+                    project3D(nX, 0, 0, centerX, centerY, scaleX, scaleY, scaleZ));
+    painter.drawLine(project3D(nX, 0, 0, centerX, centerY, scaleX, scaleY, scaleZ), 
+                    project3D(nX, nY, 0, centerX, centerY, scaleX, scaleY, scaleZ));
+    painter.drawLine(project3D(nX, nY, 0, centerX, centerY, scaleX, scaleY, scaleZ), 
+                    project3D(0, nY, 0, centerX, centerY, scaleX, scaleY, scaleZ));
+    painter.drawLine(project3D(0, nY, 0, centerX, centerY, scaleX, scaleY, scaleZ), 
+                    project3D(0, 0, 0, centerX, centerY, scaleX, scaleY, scaleZ));
     
-    // Top face
+    // Top face (max depth)
     painter.setPen(QPen(Qt::darkGray, 1));
-    painter.drawLine(project3D(0, 0, nZ, centerX, centerY, scale), 
-                    project3D(nX, 0, nZ, centerX, centerY, scale));
-    painter.drawLine(project3D(nX, 0, nZ, centerX, centerY, scale), 
-                    project3D(nX, nY, nZ, centerX, centerY, scale));
-    painter.drawLine(project3D(nX, nY, nZ, centerX, centerY, scale), 
-                    project3D(0, nY, nZ, centerX, centerY, scale));
-    painter.drawLine(project3D(0, nY, nZ, centerX, centerY, scale), 
-                    project3D(0, 0, nZ, centerX, centerY, scale));
+    painter.drawLine(project3D(0, 0, nZ, centerX, centerY, scaleX, scaleY, scaleZ), 
+                    project3D(nX, 0, nZ, centerX, centerY, scaleX, scaleY, scaleZ));
+    painter.drawLine(project3D(nX, 0, nZ, centerX, centerY, scaleX, scaleY, scaleZ), 
+                    project3D(nX, nY, nZ, centerX, centerY, scaleX, scaleY, scaleZ));
+    painter.drawLine(project3D(nX, nY, nZ, centerX, centerY, scaleX, scaleY, scaleZ), 
+                    project3D(0, nY, nZ, centerX, centerY, scaleX, scaleY, scaleZ));
+    painter.drawLine(project3D(0, nY, nZ, centerX, centerY, scaleX, scaleY, scaleZ), 
+                    project3D(0, 0, nZ, centerX, centerY, scaleX, scaleY, scaleZ));
     
     // Vertical edges
     painter.setPen(QPen(Qt::darkGray, 1.5));
-    painter.drawLine(project3D(0, 0, 0, centerX, centerY, scale), 
-                    project3D(0, 0, nZ, centerX, centerY, scale));
-    painter.drawLine(project3D(nX, 0, 0, centerX, centerY, scale), 
-                    project3D(nX, 0, nZ, centerX, centerY, scale));
-    painter.drawLine(project3D(nX, nY, 0, centerX, centerY, scale), 
-                    project3D(nX, nY, nZ, centerX, centerY, scale));
-    painter.drawLine(project3D(0, nY, 0, centerX, centerY, scale), 
-                    project3D(0, nY, nZ, centerX, centerY, scale));
+    painter.drawLine(project3D(0, 0, 0, centerX, centerY, scaleX, scaleY, scaleZ), 
+                    project3D(0, 0, nZ, centerX, centerY, scaleX, scaleY, scaleZ));
+    painter.drawLine(project3D(nX, 0, 0, centerX, centerY, scaleX, scaleY, scaleZ), 
+                    project3D(nX, 0, nZ, centerX, centerY, scaleX, scaleY, scaleZ));
+    painter.drawLine(project3D(nX, nY, 0, centerX, centerY, scaleX, scaleY, scaleZ), 
+                    project3D(nX, nY, nZ, centerX, centerY, scaleX, scaleY, scaleZ));
+    painter.drawLine(project3D(0, nY, 0, centerX, centerY, scaleX, scaleY, scaleZ), 
+                    project3D(0, nY, nZ, centerX, centerY, scaleX, scaleY, scaleZ));
     
-    // Draw grid lines
+    // Draw grid lines (less dense for clarity)
     painter.setPen(QPen(QColor(180, 180, 180), 1, Qt::DotLine));
     
-    // X-direction grid (vertical planes)
-    for (int i = 1; i < nX; ++i) {
-        // Bottom
-        painter.drawLine(project3D(i, 0, 0, centerX, centerY, scale), 
-                        project3D(i, nY, 0, centerX, centerY, scale));
-        // Top
-        painter.drawLine(project3D(i, 0, nZ, centerX, centerY, scale), 
-                        project3D(i, nY, nZ, centerX, centerY, scale));
-        // Vertical
-        painter.drawLine(project3D(i, 0, 0, centerX, centerY, scale), 
-                        project3D(i, 0, nZ, centerX, centerY, scale));
-        painter.drawLine(project3D(i, nY, 0, centerX, centerY, scale), 
-                        project3D(i, nY, nZ, centerX, centerY, scale));
+    // Adaptive grid line density
+    int skipX = std::max(1, nX / 10);
+    int skipY = std::max(1, nY / 10);
+    int skipZ = std::max(1, nZ / 10);
+    
+    // X-direction grid
+    for (int i = skipX; i < nX; i += skipX) {
+        painter.drawLine(project3D(i, 0, 0, centerX, centerY, scaleX, scaleY, scaleZ), 
+                        project3D(i, nY, 0, centerX, centerY, scaleX, scaleY, scaleZ));
+        painter.drawLine(project3D(i, 0, nZ, centerX, centerY, scaleX, scaleY, scaleZ), 
+                        project3D(i, nY, nZ, centerX, centerY, scaleX, scaleY, scaleZ));
     }
     
     // Y-direction grid
-    for (int j = 1; j < nY; ++j) {
-        // Bottom
-        painter.drawLine(project3D(0, j, 0, centerX, centerY, scale), 
-                        project3D(nX, j, 0, centerX, centerY, scale));
-        // Top
-        painter.drawLine(project3D(0, j, nZ, centerX, centerY, scale), 
-                        project3D(nX, j, nZ, centerX, centerY, scale));
-        // Vertical
-        painter.drawLine(project3D(0, j, 0, centerX, centerY, scale), 
-                        project3D(0, j, nZ, centerX, centerY, scale));
-        painter.drawLine(project3D(nX, j, 0, centerX, centerY, scale), 
-                        project3D(nX, j, nZ, centerX, centerY, scale));
+    for (int j = skipY; j < nY; j += skipY) {
+        painter.drawLine(project3D(0, j, 0, centerX, centerY, scaleX, scaleY, scaleZ), 
+                        project3D(nX, j, 0, centerX, centerY, scaleX, scaleY, scaleZ));
+        painter.drawLine(project3D(0, j, nZ, centerX, centerY, scaleX, scaleY, scaleZ), 
+                        project3D(nX, j, nZ, centerX, centerY, scaleX, scaleY, scaleZ));
     }
     
     // Z-direction grid (horizontal planes)
-    for (int k = 1; k < nZ; ++k) {
-        // X-direction
-        painter.drawLine(project3D(0, 0, k, centerX, centerY, scale), 
-                        project3D(nX, 0, k, centerX, centerY, scale));
-        painter.drawLine(project3D(0, nY, k, centerX, centerY, scale), 
-                        project3D(nX, nY, k, centerX, centerY, scale));
-        // Y-direction
-        painter.drawLine(project3D(0, 0, k, centerX, centerY, scale), 
-                        project3D(0, nY, k, centerX, centerY, scale));
-        painter.drawLine(project3D(nX, 0, k, centerX, centerY, scale), 
-                        project3D(nX, nY, k, centerX, centerY, scale));
+    for (int k = skipZ; k < nZ; k += skipZ) {
+        painter.drawLine(project3D(0, 0, k, centerX, centerY, scaleX, scaleY, scaleZ), 
+                        project3D(nX, 0, k, centerX, centerY, scaleX, scaleY, scaleZ));
+        painter.drawLine(project3D(0, nY, k, centerX, centerY, scaleX, scaleY, scaleZ), 
+                        project3D(nX, nY, k, centerX, centerY, scaleX, scaleY, scaleZ));
+        painter.drawLine(project3D(0, 0, k, centerX, centerY, scaleX, scaleY, scaleZ), 
+                        project3D(0, nY, k, centerX, centerY, scaleX, scaleY, scaleZ));
+        painter.drawLine(project3D(nX, 0, k, centerX, centerY, scaleX, scaleY, scaleZ), 
+                        project3D(nX, nY, k, centerX, centerY, scaleX, scaleY, scaleZ));
     }
-    
-    // Labels
-    painter.setPen(Qt::black);
-    QFont labelFont = painter.font();
-    labelFont.setPointSizeF(9);
-    painter.setFont(labelFont);
-    
-    QString infoText = QString("Boundary: X[%1→%2] Y[%3→%4] Z[%5→%6] km\nGrid: %7×%8×%9 points (dx=%10, dy=%11, dz=%12 km)")
-        .arg(currentBoundary.xMin, 0, 'f', 1).arg(currentBoundary.xMax, 0, 'f', 1)
-        .arg(currentBoundary.yMin, 0, 'f', 1).arg(currentBoundary.yMax, 0, 'f', 1)
-        .arg(currentBoundary.zMin, 0, 'f', 1).arg(currentBoundary.zMax, 0, 'f', 1)
-        .arg(nX).arg(nY).arg(nZ)
-        .arg(currentBoundary.dx, 0, 'f', 2)
-        .arg(currentBoundary.dy, 0, 'f', 2)
-        .arg(currentBoundary.dz, 0, 'f', 2);
-    
-    painter.fillRect(10, height() - 50, width() - 20, 40, QColor(255, 255, 255, 220));
-    painter.drawText(15, height() - 35, width() - 30, 30, Qt::AlignLeft | Qt::TextWordWrap, infoText);
 }
 
 void MapViewer3D::draw3DStations(QPainter &painter) {
     int centerX = width() / 2;
     int centerY = height() / 2 + 20;
-    double scale = 50 * zoomFactor;
     
     double xRange = currentBoundary.xMax - currentBoundary.xMin;
     double yRange = currentBoundary.yMax - currentBoundary.yMin;
+    double zRange = currentBoundary.depthMax - currentBoundary.depthMin;
     
-    int nX = static_cast<int>(xRange / currentBoundary.dx) + 1;
-    int nY = static_cast<int>(yRange / currentBoundary.dy) + 1;
+    int nX = static_cast<int>(xRange / currentBoundary.gridSpacing) + 1;
+    int nY = static_cast<int>(yRange / currentBoundary.gridSpacing) + 1;
+    
+    double maxRange = std::max({xRange, yRange, zRange});
+    double baseScale = 300.0 / maxRange * zoomFactor;
+    
+    double scaleX = baseScale * (xRange / maxRange);
+    double scaleY = baseScale * (yRange / maxRange);
+    double scaleZ = baseScale * (zRange / maxRange);
     
     painter.setPen(QPen(Qt::red, 3));
     painter.setBrush(Qt::red);
@@ -213,16 +202,16 @@ void MapViewer3D::draw3DStations(QPainter &painter) {
         double normX = (station.longitude - currentBoundary.xMin) / xRange * nX;
         double normY = (station.latitude - currentBoundary.yMin) / yRange * nY;
         
-        QPointF pos = project3D(normX, normY, 0, centerX, centerY, scale);
+        QPointF pos = project3D(normX, normY, 0, centerX, centerY, scaleX, scaleY, scaleZ);
         painter.drawEllipse(pos, 6, 6);
         
-        // Draw vertical line to show position
-        QPointF posTop = project3D(normX, normY, 5, centerX, centerY, scale);
+        // Draw vertical line
+        QPointF posDepth = project3D(normX, normY, 5, centerX, centerY, scaleX, scaleY, scaleZ);
         painter.setPen(QPen(Qt::red, 1, Qt::DashLine));
-        painter.drawLine(pos, posTop);
+        painter.drawLine(pos, posDepth);
         
         painter.setPen(QPen(Qt::red, 3));
-        painter.drawEllipse(posTop, 4, 4);
+        painter.drawEllipse(posDepth, 4, 4);
         
         // Draw station name
         painter.setPen(Qt::darkRed);
@@ -235,32 +224,38 @@ void MapViewer3D::draw3DStations(QPainter &painter) {
     }
 }
 
-void MapViewer3D::draw3DAxes(QPainter &painter) {
+void MapViewer3D::draw3DAxesWithLabels(QPainter &painter) {
     int centerX = width() / 2;
     int centerY = height() / 2 + 20;
-    double scale = 50 * zoomFactor;
     
-    // Calculate max dimensions for axes
     double xRange = currentBoundary.xMax - currentBoundary.xMin;
     double yRange = currentBoundary.yMax - currentBoundary.yMin;
-    double zRange = currentBoundary.zMax - currentBoundary.zMin;
+    double zRange = currentBoundary.depthMax - currentBoundary.depthMin;
     
-    int nX = static_cast<int>(xRange / currentBoundary.dx) + 1;
-    int nY = static_cast<int>(yRange / currentBoundary.dy) + 1;
-    int nZ = static_cast<int>(zRange / currentBoundary.dz) + 1;
+    int nX = static_cast<int>(xRange / currentBoundary.gridSpacing) + 1;
+    int nY = static_cast<int>(yRange / currentBoundary.gridSpacing) + 1;
+    int nZ = static_cast<int>(zRange / currentBoundary.gridSpacing) + 1;
+    
+    double maxRange = std::max({xRange, yRange, zRange});
+    double baseScale = 300.0 / maxRange * zoomFactor;
+    
+    double scaleX = baseScale * (xRange / maxRange);
+    double scaleY = baseScale * (yRange / maxRange);
+    double scaleZ = baseScale * (zRange / maxRange);
     
     // Origin point
-    QPointF origin = project3D(0, 0, 0, centerX, centerY, scale);
+    QPointF origin = project3D(0, 0, 0, centerX, centerY, scaleX, scaleY, scaleZ);
     
-    // X-axis (red)
-    QPointF xEnd = project3D(nX * 1.2, 0, 0, centerX, centerY, scale);
+    // X-axis (red) - Longitude
+    QPointF xEnd = project3D(nX * 1.3, 0, 0, centerX, centerY, scaleX, scaleY, scaleZ);
     painter.setPen(QPen(QColor(255, 0, 0), 3));
     painter.drawLine(origin, xEnd);
     painter.setBrush(Qt::red);
-    QPolygonF xArrow;
+    
     QPointF xDir = (xEnd - origin);
     double xLen = std::sqrt(xDir.x() * xDir.x() + xDir.y() * xDir.y());
     xDir /= xLen;
+    QPolygonF xArrow;
     xArrow << xEnd 
            << xEnd - xDir * 15 + QPointF(-xDir.y() * 8, xDir.x() * 8)
            << xEnd - xDir * 15 + QPointF(xDir.y() * 8, -xDir.x() * 8);
@@ -268,47 +263,77 @@ void MapViewer3D::draw3DAxes(QPainter &painter) {
     
     painter.setPen(Qt::red);
     QFont axisFont = painter.font();
-    axisFont.setPointSize(11);
+    axisFont.setPointSize(10);
     axisFont.setBold(true);
     painter.setFont(axisFont);
-    painter.drawText(xEnd + QPointF(10, 5), QString("X (%1 km)").arg(currentBoundary.xMax - currentBoundary.xMin, 0, 'f', 1));
+    painter.drawText(xEnd + QPointF(10, 5), QString("X (Lon) %1 km").arg(xRange, 0, 'f', 1));
     
-    // Y-axis (green)
-    QPointF yEnd = project3D(0, nY * 1.2, 0, centerX, centerY, scale);
+    // Y-axis (green) - Latitude
+    QPointF yEnd = project3D(0, nY * 1.3, 0, centerX, centerY, scaleX, scaleY, scaleZ);
     painter.setPen(QPen(QColor(0, 200, 0), 3));
     painter.drawLine(origin, yEnd);
     painter.setBrush(QColor(0, 200, 0));
-    QPolygonF yArrow;
+    
     QPointF yDir = (yEnd - origin);
     double yLen = std::sqrt(yDir.x() * yDir.x() + yDir.y() * yDir.y());
     yDir /= yLen;
+    QPolygonF yArrow;
     yArrow << yEnd 
            << yEnd - yDir * 15 + QPointF(-yDir.y() * 8, yDir.x() * 8)
            << yEnd - yDir * 15 + QPointF(yDir.y() * 8, -yDir.x() * 8);
     painter.drawPolygon(yArrow);
     
     painter.setPen(QColor(0, 150, 0));
-    painter.drawText(yEnd + QPointF(10, 5), QString("Y (%1 km)").arg(currentBoundary.yMax - currentBoundary.yMin, 0, 'f', 1));
+    painter.drawText(yEnd + QPointF(10, 5), QString("Y (Lat) %1 km").arg(yRange, 0, 'f', 1));
     
-    // Z-axis (blue)
-    QPointF zEnd = project3D(0, 0, nZ * 1.2, centerX, centerY, scale);
+    // Z-axis (blue) - Depth
+    QPointF zEnd = project3D(0, 0, nZ * 1.3, centerX, centerY, scaleX, scaleY, scaleZ);
     painter.setPen(QPen(QColor(0, 0, 255), 3));
     painter.drawLine(origin, zEnd);
     painter.setBrush(Qt::blue);
-    QPolygonF zArrow;
+    
     QPointF zDir = (zEnd - origin);
     double zLen = std::sqrt(zDir.x() * zDir.x() + zDir.y() * zDir.y());
     zDir /= zLen;
+    QPolygonF zArrow;
     zArrow << zEnd 
            << zEnd - zDir * 15 + QPointF(-zDir.y() * 8, zDir.x() * 8)
            << zEnd - zDir * 15 + QPointF(zDir.y() * 8, -zDir.x() * 8);
     painter.drawPolygon(zArrow);
     
     painter.setPen(Qt::blue);
-    painter.drawText(zEnd + QPointF(-40, -10), QString("Z (%1 km)").arg(currentBoundary.zMax - currentBoundary.zMin, 0, 'f', 1));
+    painter.drawText(zEnd + QPointF(-50, -10), QString("Z (Depth) %1 km").arg(zRange, 0, 'f', 1));
 }
 
-QPointF MapViewer3D::project3D(double x, double y, double z, int centerX, int centerY, double scale) const {
+void MapViewer3D::drawCoordinateIndicators(QPainter &painter) {
+    painter.resetTransform();
+    
+    painter.setPen(Qt::black);
+    QFont labelFont = painter.font();
+    labelFont.setPointSizeF(9);
+    painter.setFont(labelFont);
+    
+    QString infoText = QString(
+        "Coordinate Range:\n"
+        "Lon: [%1°, %2°]\n"
+        "Lat: [%3°, %4°]\n"
+        "Depth: [%5, %6] km\n"
+        "Grid: %7×%8×%9 (%10 km spacing)")
+        .arg(currentBoundary.xMin, 0, 'f', 2).arg(currentBoundary.xMax, 0, 'f', 2)
+        .arg(currentBoundary.yMin, 0, 'f', 2).arg(currentBoundary.yMax, 0, 'f', 2)
+        .arg(currentBoundary.depthMin, 0, 'f', 1).arg(currentBoundary.depthMax, 0, 'f', 1)
+        .arg(static_cast<int>((currentBoundary.xMax - currentBoundary.xMin) / currentBoundary.gridSpacing) + 1)
+        .arg(static_cast<int>((currentBoundary.yMax - currentBoundary.yMin) / currentBoundary.gridSpacing) + 1)
+        .arg(static_cast<int>((currentBoundary.depthMax - currentBoundary.depthMin) / currentBoundary.gridSpacing) + 1)
+        .arg(currentBoundary.gridSpacing, 0, 'f', 2);
+    
+    painter.fillRect(10, 40, 200, 120, QColor(255, 255, 255, 230));
+    painter.drawRect(10, 40, 200, 120);
+    painter.drawText(15, 55, 190, 105, Qt::AlignLeft | Qt::TextWordWrap, infoText);
+}
+
+QPointF MapViewer3D::project3D(double x, double y, double z, int centerX, int centerY, 
+                                double scaleX, double scaleY, double scaleZ) const {
     // Rotate around Z-axis (azimuth)
     double radZ = rotationZ * M_PI / 180.0;
     double x1 = x * cos(radZ) - y * sin(radZ);
@@ -319,9 +344,9 @@ QPointF MapViewer3D::project3D(double x, double y, double z, int centerX, int ce
     double y2 = y1 * cos(radX) - z * sin(radX);
     double z2 = y1 * sin(radX) + z * cos(radX);
     
-    // Isometric-style projection
-    double isoX = x1 * scale;
-    double isoY = y2 * scale * 0.5 - z2 * scale;
+    // Isometric-style projection with proper scaling
+    double isoX = x1 * scaleX;
+    double isoY = y2 * scaleY * 0.5 - z2 * scaleZ;
     
     return QPointF(centerX + isoX, centerY + isoY);
 }
@@ -353,7 +378,7 @@ void MapViewer3D::mouseMoveEvent(QMouseEvent *event) {
         rotationZ += delta.x() * 0.5;
         rotationX += delta.y() * 0.5;
         
-        // Clamp rotation X to prevent flipping
+        // Clamp rotation X
         if (rotationX < -89) rotationX = -89;
         if (rotationX > 89) rotationX = 89;
         
