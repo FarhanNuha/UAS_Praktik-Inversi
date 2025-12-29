@@ -1,4 +1,5 @@
 #include "MethodWidget.h"
+#include "MapViewer2D.h"
 #include <QVBoxLayout>
 #include <QFormLayout>
 #include <QGroupBox>
@@ -6,6 +7,7 @@
 #include <QDoubleValidator>
 #include <QIntValidator>
 #include <QCheckBox>
+#include <cmath>
 
 MethodWidget::MethodWidget(QWidget *parent)
     : QWidget(parent)
@@ -178,21 +180,46 @@ void MethodWidget::createGlobalMethodWidgets() {
     
     // Grid Search parameters
     gridSearchParams = new QWidget();
-    QFormLayout *gsLayout = new QFormLayout(gridSearchParams);
+    QVBoxLayout *gsMainLayout = new QVBoxLayout(gridSearchParams);
     
     QLabel *gsNote = new QLabel("<i>Grid didefinisikan di 'Calculating Condition'</i>", this);
     gsNote->setWordWrap(true);
-    gsLayout->addRow(gsNote);
+    gsMainLayout->addWidget(gsNote);
     
+    // Grid size display
+    gridSizeLabel = new QLabel("<b>Total Grid Size:</b> [Set boundary first]", this);
+    gridSizeLabel->setStyleSheet("QLabel { color: #0066cc; font-weight: bold; padding: 5px; background-color: #e3f2fd; border-radius: 3px; }");
+    gsMainLayout->addWidget(gridSizeLabel);
+    
+    // Monte Carlo toggle
+    monteCarloCheck = new QCheckBox("Monte Carlo Random Sampling", this);
+    monteCarloCheck->setChecked(false);
+    monteCarloCheck->setStyleSheet("QCheckBox { font-weight: bold; padding: 5px; }");
+    gsMainLayout->addWidget(monteCarloCheck);
+    
+    // Sample size input
+    QFormLayout *gsLayout = new QFormLayout();
+    
+    sampleSizeEdit = new QLineEdit("1000", this);
+    sampleSizeEdit->setValidator(new QIntValidator(10, 1000000, this));
+    sampleSizeEdit->setEnabled(false);
+    gsLayout->addRow("Sample Size:", sampleSizeEdit);
+    
+    connect(monteCarloCheck, &QCheckBox::toggled, sampleSizeEdit, &QLineEdit::setEnabled);
+    
+    gsMainLayout->addLayout(gsLayout);
+    
+    // Info labels
     QLabel *gsInfo = new QLabel(
-        "<b>Grid Search:</b><br>"
-        "Pencarian exhaustive pada seluruh grid.<br>"
-        "Perhitungan berhenti setelah semua grid dievaluasi.",
+        "<b>Grid Search Mode:</b><br>"
+        "• <b>Full Grid:</b> Evaluasi semua grid points (exhaustive)<br>"
+        "• <b>Monte Carlo:</b> Random sampling untuk grid besar<br><br>"
+        "<i>Monte Carlo berguna untuk mempercepat komputasi pada grid yang sangat besar.</i>",
         this
     );
     gsInfo->setWordWrap(true);
-    gsInfo->setStyleSheet("QLabel { background-color: #e3f2fd; padding: 8px; border-radius: 3px; }");
-    gsLayout->addRow(gsInfo);
+    gsInfo->setStyleSheet("QLabel { background-color: #e8f5e9; padding: 10px; border-radius: 5px; }");
+    gsMainLayout->addWidget(gsInfo);
     
     globalParamStack->addWidget(gridSearchParams);
     
@@ -592,4 +619,29 @@ QString MethodWidget::getGlobalSubMethod() const {
         return saVariantCombo->currentText();
     }
     return "";
+}
+
+void MethodWidget::updateGridSize(const BoundaryData &boundary) {
+    // Calculate grid size with proper degree to km conversion
+    double avgLat = (boundary.yMin + boundary.yMax) / 2.0;
+    double latRad = avgLat * M_PI / 180.0;
+    double xRangeKm = (boundary.xMax - boundary.xMin) * 111.320 * cos(latRad);
+    double yRangeKm = (boundary.yMax - boundary.yMin) * 110.574;
+    double zRangeKm = boundary.depthMax - boundary.depthMin;
+    
+    int nX = static_cast<int>(xRangeKm / boundary.gridSpacing) + 1;
+    int nY = static_cast<int>(yRangeKm / boundary.gridSpacing) + 1;
+    int nZ = static_cast<int>(zRangeKm / boundary.gridSpacing) + 1;
+    long long totalGrid = static_cast<long long>(nX) * nY * nZ;
+    
+    // Update label
+    gridSizeLabel->setText(QString("<b>Total Grid Size:</b> %1 points (%2 × %3 × %4)")
+        .arg(totalGrid).arg(nX).arg(nY).arg(nZ));
+    
+    // Update validator max for sample size
+    sampleSizeEdit->setValidator(new QIntValidator(10, static_cast<int>(std::min(totalGrid, 1000000LL)), this));
+    
+    // Auto-suggest sample size (10% of grid or max 10000)
+    int suggestedSample = std::min(static_cast<int>(totalGrid * 0.1), 10000);
+    sampleSizeEdit->setText(QString::number(suggestedSample));
 }

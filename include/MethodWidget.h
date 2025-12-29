@@ -7,6 +7,10 @@
 #include <QLineEdit>
 #include <QScrollArea>
 #include <QCheckBox>
+#include <QLabel>
+
+// Forward declaration
+struct BoundaryData;
 
 class MethodWidget : public QWidget {
     Q_OBJECT
@@ -18,6 +22,9 @@ public:
     QString getApproach() const;
     QString getMethod() const;
     QString getGlobalSubMethod() const;
+
+public slots:
+    void updateGridSize(const BoundaryData &boundary);
 
 private slots:
     void onApproachChanged(int index);
@@ -55,6 +62,11 @@ private:
     QWidget *gridSearchParams;
     QWidget *simulatedAnnealingParams;
     QWidget *geneticAlgorithmParams;
+    
+    // Grid Search widgets
+    QLabel *gridSizeLabel;
+    QCheckBox *monteCarloCheck;
+    QLineEdit *sampleSizeEdit;
     
     // Simulated Annealing sub-widgets
     QComboBox *saVariantCombo;

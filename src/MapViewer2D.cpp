@@ -119,6 +119,7 @@ void MapCanvas::paintEvent(QPaintEvent *event) {
         painter.setBrush(Qt::blue);
         
         for (const auto &station : stationList) {
+            // Convert lat/lon to pixel position on map
             QPointF pos = latLonToPixel(station.latitude, station.longitude);
             
             // Draw triangle marker
@@ -129,10 +130,17 @@ void MapCanvas::paintEvent(QPaintEvent *event) {
                     << pos + QPointF(size * 0.75, size * 0.5);
             painter.drawPolygon(triangle);
             
-            // Draw station name
+            // Draw station name (not transformed)
             painter.save();
             painter.resetTransform();
-            QPointF screenPos = painter.transform().map(pos);
+            
+            // Get screen position after all transforms
+            QTransform transform;
+            transform.translate(width() / 2.0, height() / 2.0);
+            transform.scale(zoomFactor, zoomFactor);
+            transform.translate(-width() / 2.0 + panOffset.x(), -height() / 2.0 + panOffset.y());
+            QPointF screenPos = transform.map(pos);
+            
             painter.setPen(Qt::black);
             QFont font = painter.font();
             font.setPointSizeF(9);
@@ -249,7 +257,25 @@ void MapCanvas::mousePressEvent(QMouseEvent *event) {
 void MapCanvas::mouseMoveEvent(QMouseEvent *event) {
     if (isPanning) {
         QPointF delta = event->pos() - lastMousePos;
-        panOffset += delta / zoomFactor;
+        QPointF newPanOffset = panOffset + delta / zoomFactor;
+        
+        // Calculate visible bounds with new pan offset
+        QPointF tempPan = panOffset;
+        panOffset = newPanOffset;
+        QRectF bounds = getVisibleBounds();
+        
+        // Check if we're trying to pan outside world bounds
+        bool validPan = true;
+        if (bounds.left() < -180.0 || bounds.right() > 180.0 ||
+            bounds.top() > 90.0 || bounds.bottom() < -90.0) {
+            validPan = false;
+        }
+        
+        // If invalid, revert to old pan
+        if (!validPan) {
+            panOffset = tempPan;
+        }
+        
         lastMousePos = event->pos();
         update();
     }

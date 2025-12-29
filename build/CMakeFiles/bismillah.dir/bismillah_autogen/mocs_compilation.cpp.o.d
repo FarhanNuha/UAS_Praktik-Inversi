@@ -580,6 +580,8 @@ CMakeFiles/bismillah.dir/bismillah_autogen/mocs_compilation.cpp.o : \
   /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qtabbar.h \
   /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qtabwidget.h \
   /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qrubberband.h \
+  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QComboBox \
+  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qcombobox.h \
   /usr/include/x86_64-linux-gnu/qt6/QtCore/QList \
   /home/farhan/git/inversi/build/bismillah_autogen/6YEA5652QU/moc_MainWindow.cpp \
   /home/farhan/hpc_sdk/Linux_x86_64/24.7/compilers/include/memory \
@@ -613,13 +615,13 @@ CMakeFiles/bismillah.dir/bismillah_autogen/mocs_compilation.cpp.o : \
   /home/farhan/git/inversi/build/bismillah_autogen/6YEA5652QU/../../../include/MethodWidget.h \
   /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QWidget \
   /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QComboBox \
-  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qcombobox.h \
   /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QStackedWidget \
   /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qstackedwidget.h \
   /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QLineEdit \
   /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QScrollArea \
   /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QCheckBox \
   /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qcheckbox.h \
+  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QLabel \
   /home/farhan/git/inversi/build/bismillah_autogen/6YEA5652QU/moc_ResultWidget.cpp \
   /home/farhan/hpc_sdk/Linux_x86_64/24.7/compilers/include/memory \
   /home/farhan/git/inversi/build/bismillah_autogen/6YEA5652QU/../../../include/ResultWidget.h \
@@ -637,4 +639,5 @@ CMakeFiles/bismillah.dir/bismillah_autogen/mocs_compilation.cpp.o : \
   /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QLineEdit \
   /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QPushButton \
   /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QTextEdit \
-  /usr/include/x86_64-linux-gnu/qt6/QtCore/QVector 
+  /usr/include/x86_64-linux-gnu/qt6/QtCore/QVector \
+  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QLabel 

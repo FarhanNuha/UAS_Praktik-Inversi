@@ -17,7 +17,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     setupUI();
     resize(1280, 720);
-    setWindowTitle("Inversi Hiposenter Geofisika");
+    setWindowTitle("Apakah ini my software");
 }
 
 MainWindow::~MainWindow() {
@@ -109,11 +109,8 @@ void MainWindow::createCentralWidget() {
     
     mainSplitter->addWidget(leftTabWidget);
     
-    // RIGHT PANEL (3 parts) - Vertical split
-    rightPanel = new QWidget(this);
-    QVBoxLayout *rightLayout = new QVBoxLayout(rightPanel);
-    rightLayout->setContentsMargins(0, 0, 0, 0);
-    rightLayout->setSpacing(5);
+    // RIGHT PANEL (3 parts) - Vertical splitter for resizable sections
+    QSplitter *rightSplitter = new QSplitter(Qt::Vertical, this);
     
     // Top right tab widget
     topRightTabWidget = new QTabWidget(this);
@@ -124,7 +121,7 @@ void MainWindow::createCentralWidget() {
     methodWidget = new MethodWidget(this);
     topRightTabWidget->addTab(methodWidget, "Metode");
     
-    rightLayout->addWidget(topRightTabWidget, 1);
+    rightSplitter->addWidget(topRightTabWidget);
     
     // Bottom right tab widget
     bottomRightTabWidget = new QTabWidget(this);
@@ -135,9 +132,13 @@ void MainWindow::createCentralWidget() {
     dataInputWidget = new DataInputWidget(this);
     bottomRightTabWidget->addTab(dataInputWidget, "Data Input");
     
-    rightLayout->addWidget(bottomRightTabWidget, 1);
+    rightSplitter->addWidget(bottomRightTabWidget);
     
-    mainSplitter->addWidget(rightPanel);
+    // Set equal stretch for top and bottom
+    rightSplitter->setStretchFactor(0, 1);
+    rightSplitter->setStretchFactor(1, 1);
+    
+    mainSplitter->addWidget(rightSplitter);
     
     // Set splitter ratio to 8:3
     mainSplitter->setStretchFactor(0, 8);
@@ -150,6 +151,14 @@ void MainWindow::createCentralWidget() {
             mapViewer2D, &MapViewer2D::updateBoundary);
     connect(calcConditionWidget, &CalculatingConditionWidget::conditionCommitted,
             mapViewer3D, &MapViewer3D::updateBoundary);
+    
+    // Connect boundary to velocity model for grid validation
+    connect(calcConditionWidget, &CalculatingConditionWidget::conditionCommitted,
+            velocityModelWidget, &VelocityModelWidget::setBoundary);
+    
+    // Connect boundary to method widget for grid search
+    connect(calcConditionWidget, &CalculatingConditionWidget::conditionCommitted,
+            methodWidget, &MethodWidget::updateGridSize);
     
     connect(dataInputWidget, &DataInputWidget::stationsLoaded,
             mapViewer2D, &MapViewer2D::updateStations);
@@ -174,11 +183,11 @@ void MainWindow::onExit() {
 }
 
 void MainWindow::onAbout() {
-    QMessageBox::about(this, "About GeoViewer",
-        "GeoViewer v1.0\n\n"
-        "Seismic Data Processing and Analysis Tool\n\n"
-        "Developer: Professional Qt6 C++ Framework\n"
-        "Client: Farhan Nuha Zhofiro / 31.22.0006");
+    QMessageBox::about(this, "About My-Software",
+        "Apakah ini My-Software\n\n"
+        "Software untuk inversi penentuan hiposenter gempabumi\n\n"
+        "Developer: Farhan Nuha Zhofiro/ 31.22.0006\n"
+        "Ditujukan Untuk Memenuhi Kriteria UAS Paktik Inversi geofisika");
 }
 
 void MainWindow::updateStatusBar(const QString &message) {

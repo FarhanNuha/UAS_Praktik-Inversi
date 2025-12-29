@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QPushButton>
 #include <QTableWidget>
+#include <QComboBox>
 #include "MapViewer2D.h"
 
 class DataInputWidget : public QWidget {
@@ -35,6 +36,7 @@ private:
     QPushButton *deleteRowButton;
     QPushButton *computeButton;
     QTableWidget *stationTable;
+    QComboBox *separatorCombo;
     
     QVector<StationData> stations;
 };

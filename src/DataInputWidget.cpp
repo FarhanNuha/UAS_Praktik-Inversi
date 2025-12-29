@@ -7,6 +7,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <QLabel>
+#include <QRegularExpression>
 
 DataInputWidget::DataInputWidget(QWidget *parent)
     : QWidget(parent)
@@ -22,15 +23,27 @@ void DataInputWidget::setupUI() {
     mainLayout->setSpacing(10);
     mainLayout->setContentsMargins(10, 10, 10, 10);
     
+    // Separator selection
+    QHBoxLayout *separatorLayout = new QHBoxLayout();
+    separatorLayout->addWidget(new QLabel("File Separator:", this));
+    
+    separatorCombo = new QComboBox(this);
+    separatorCombo->addItem("Comma (,)");
+    separatorCombo->addItem("Space/Tab");
+    separatorLayout->addWidget(separatorCombo);
+    separatorLayout->addStretch();
+    
+    mainLayout->addLayout(separatorLayout);
+    
     // Load file button
-    loadButton = new QPushButton("Load Data Arrival Time", this);
+    loadButton = new QPushButton("Load Station Data File", this);
     loadButton->setMinimumHeight(35);
     connect(loadButton, &QPushButton::clicked, this, &DataInputWidget::onLoadDataFile);
     mainLayout->addWidget(loadButton);
     
     // Format info
     QLabel *formatLabel = new QLabel(
-        "<b>Format:</b> Stasiun, Latitude, Longitude, Arrival Time UTC(hh:mm:ss)<br>"
+        "<b>Format:</b> Stasiun, Latitude, Longitude, Arrival Time UTC (hh:mm:ss)<br>"
         "<i>Contoh: examples/station_data.txt</i>",
         this
     );
@@ -51,11 +64,11 @@ void DataInputWidget::setupUI() {
     // Button row
     QHBoxLayout *buttonLayout = new QHBoxLayout();
     
-    addRowButton = new QPushButton("Tambah", this);
+    addRowButton = new QPushButton("Add Row", this);
     connect(addRowButton, &QPushButton::clicked, this, &DataInputWidget::onAddRow);
     buttonLayout->addWidget(addRowButton);
     
-    deleteRowButton = new QPushButton("Hapus", this);
+    deleteRowButton = new QPushButton("Delete Row", this);
     connect(deleteRowButton, &QPushButton::clicked, this, &DataInputWidget::onDeleteRow);
     buttonLayout->addWidget(deleteRowButton);
     
@@ -90,7 +103,7 @@ void DataInputWidget::onLoadDataFile() {
         this,
         "Load Station Data",
         "examples",
-        "Text Files (*.txt);;All Files (*)"
+        "Text Files (*.txt);;CSV Files (*.csv);;All Files (*)"
     );
     
     if (fileName.isEmpty()) {
@@ -116,25 +129,37 @@ void DataInputWidget::onLoadDataFile() {
         return;
     }
     
+    // Determine separator
+    bool useSpace = (separatorCombo->currentIndex() == 1);
+    
     // Clear existing data
     stationTable->setRowCount(0);
     stations.clear();
     
     int row = 0;
+    int skippedLines = 0;
+    
     while (!in.atEnd()) {
         QString line = in.readLine().trimmed();
         if (line.isEmpty()) continue;
         
-        QStringList parts = line.split(',');
+        QStringList parts;
+        if (useSpace) {
+            // Split by whitespace (space or tab), remove empty entries
+            parts = line.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
+        } else {
+            // Split by comma
+            parts = line.split(',');
+        }
+        
         if (parts.size() < 4) {
-            QMessageBox::warning(this, "Warning", 
-                QString("Skipping invalid line %1: %2").arg(row + 1).arg(line));
+            skippedLines++;
             continue;
         }
         
         stationTable->insertRow(row);
         
-        for (int col = 0; col < 4; ++col) {
+        for (int col = 0; col < 4 && col < parts.size(); ++col) {
             QTableWidgetItem *item = new QTableWidgetItem(parts[col].trimmed());
             stationTable->setItem(row, col, item);
         }
@@ -146,8 +171,12 @@ void DataInputWidget::onLoadDataFile() {
     
     updateStationsFromTable();
     
-    QMessageBox::information(this, "Success", 
-        QString("Loaded %1 stations from file:\n%2").arg(row).arg(fileName));
+    QString message = QString("Loaded %1 stations from file:\n%2").arg(row).arg(fileName);
+    if (skippedLines > 0) {
+        message += QString("\n\n%1 invalid lines were skipped").arg(skippedLines);
+    }
+    
+    QMessageBox::information(this, "Success", message);
 }
 
 void DataInputWidget::onAddRow() {

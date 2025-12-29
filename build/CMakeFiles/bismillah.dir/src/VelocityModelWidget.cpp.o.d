@@ -553,6 +553,16 @@ CMakeFiles/bismillah.dir/src/VelocityModelWidget.cpp.o : \
   /usr/include/x86_64-linux-gnu/qt6/QtCore/QVector \
   /usr/include/x86_64-linux-gnu/qt6/QtCore/qvector.h \
   /usr/include/x86_64-linux-gnu/qt6/QtCore/qcontainerfwd.h \
+  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QLabel \
+  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qlabel.h \
+  /usr/include/x86_64-linux-gnu/qt6/QtGui/qpicture.h \
+  /usr/include/x86_64-linux-gnu/qt6/QtCore/qiodevice.h \
+  /usr/include/x86_64-linux-gnu/qt6/QtCore/qstringlist.h \
+  /home/farhan/git/inversi/include/MapViewer2D.h \
+  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QWidget \
+  /usr/include/x86_64-linux-gnu/qt6/QtGui/QPixmap \
+  /usr/include/x86_64-linux-gnu/qt6/QtCore/QVector \
+  /usr/include/x86_64-linux-gnu/qt6/QtCore/QPointF \
   /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QVBoxLayout \
   /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qboxlayout.h \
   /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qlayout.h \
@@ -565,16 +575,14 @@ CMakeFiles/bismillah.dir/src/VelocityModelWidget.cpp.o : \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/limits.h \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/limits.h \
   /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QHBoxLayout \
+  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QVBoxLayout \
+  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QHBoxLayout \
   /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QFormLayout \
   /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qformlayout.h \
   /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QLayout \
   /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QGroupBox \
   /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qgroupbox.h \
   /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QLabel \
-  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qlabel.h \
-  /usr/include/x86_64-linux-gnu/qt6/QtGui/qpicture.h \
-  /usr/include/x86_64-linux-gnu/qt6/QtCore/qiodevice.h \
-  /usr/include/x86_64-linux-gnu/qt6/QtCore/qstringlist.h \
   /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QFileDialog \
   /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qfiledialog.h \
   /usr/include/x86_64-linux-gnu/qt6/QtCore/qdir.h \

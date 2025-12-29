@@ -8,6 +8,10 @@
 #include <QPushButton>
 #include <QTextEdit>
 #include <QVector>
+#include <QLabel>
+
+// Forward declaration
+struct BoundaryData;
 
 struct VelocityLayer1D {
     double vp;
@@ -15,7 +19,7 @@ struct VelocityLayer1D {
 };
 
 struct VelocityPoint3D {
-    double x, y, z;
+    double lat, lon, depth;
     double vp;
 };
 
@@ -79,6 +83,8 @@ public:
     QString get3DModelPath() const;
     QVector<VelocityLayer1D> get1DModelData() const;
     QVector<VelocityPoint3D> get3DModelData() const;
+    
+    void setBoundary(const BoundaryData &boundary);
 
 private slots:
     void onModelTypeChanged(int index);
@@ -110,6 +116,11 @@ private:
     Velocity3DPlot *velocity3DPlot;
     QString model3DFilePath;
     QVector<VelocityPoint3D> model3DData;
+    QLabel *model3DLocationLabel;
+    
+    // Boundary for grid validation
+    BoundaryData *currentBoundary;
+    bool boundarySet;
 };
 
 #endif // VELOCITYMODELWIDGET_H

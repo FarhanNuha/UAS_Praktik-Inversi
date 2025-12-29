@@ -594,6 +594,7 @@ CMakeFiles/bismillah.dir/src/MainWindow.cpp.o : \
   /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QScrollArea \
   /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QCheckBox \
   /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qcheckbox.h \
+  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QLabel \
   /home/farhan/git/inversi/include/VelocityModelWidget.h \
   /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QWidget \
   /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QComboBox \
@@ -603,6 +604,7 @@ CMakeFiles/bismillah.dir/src/MainWindow.cpp.o : \
   /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QTextEdit \
   /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qtextedit.h \
   /usr/include/x86_64-linux-gnu/qt6/QtCore/QVector \
+  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QLabel \
   /home/farhan/git/inversi/include/DataInputWidget.h \
   /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QWidget \
   /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QPushButton \
@@ -611,6 +613,7 @@ CMakeFiles/bismillah.dir/src/MainWindow.cpp.o : \
   /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qtableview.h \
   /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qabstractitemview.h \
   /usr/include/x86_64-linux-gnu/qt6/QtCore/qitemselectionmodel.h \
+  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QComboBox \
   /home/farhan/git/inversi/include/ResultWidget.h \
   /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QWidget \
   /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QTextEdit \

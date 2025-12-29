@@ -1,4 +1,5 @@
 #include "VelocityModelWidget.h"
+#include "MapViewer2D.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QFormLayout>
@@ -209,18 +210,18 @@ void Velocity3DPlot::paintEvent(QPaintEvent *event) {
     }
     
     // Find ranges
-    double minX = 1e9, maxX = -1e9;
-    double minY = 1e9, maxY = -1e9;
-    double minZ = 1e9, maxZ = -1e9;
+    double minLat = 1e9, maxLat = -1e9;
+    double minLon = 1e9, maxLon = -1e9;
+    double minDepth = 1e9, maxDepth = -1e9;
     double minVp = 1e9, maxVp = -1e9;
     
     for (const auto &pt : velocityPoints) {
-        minX = std::min(minX, pt.x);
-        maxX = std::max(maxX, pt.x);
-        minY = std::min(minY, pt.y);
-        maxY = std::max(maxY, pt.y);
-        minZ = std::min(minZ, pt.z);
-        maxZ = std::max(maxZ, pt.z);
+        minLat = std::min(minLat, pt.lat);
+        maxLat = std::max(maxLat, pt.lat);
+        minLon = std::min(minLon, pt.lon);
+        maxLon = std::max(maxLon, pt.lon);
+        minDepth = std::min(minDepth, pt.depth);
+        maxDepth = std::max(maxDepth, pt.depth);
         minVp = std::min(minVp, pt.vp);
         maxVp = std::max(maxVp, pt.vp);
     }
@@ -367,12 +368,15 @@ void Velocity3DPlot::mouseReleaseEvent(QMouseEvent *event) {
 // ============================================================================
 
 VelocityModelWidget::VelocityModelWidget(QWidget *parent)
-    : QWidget(parent)
+    : QWidget(parent), currentBoundary(nullptr), boundarySet(false)
 {
     setupUI();
 }
 
 VelocityModelWidget::~VelocityModelWidget() {
+    if (currentBoundary) {
+        delete currentBoundary;
+    }
 }
 
 void VelocityModelWidget::setupUI() {
@@ -464,12 +468,20 @@ void VelocityModelWidget::setupUI() {
     model3DLayout->addWidget(load3DButton);
     
     QLabel *format3DLabel = new QLabel(
-        "<b>Format File 3D:</b> Tensor format (X, Y, Z, Vp)<br>"
+        "<b>Format File 3D:</b> Lat, Lon, Depth, Vp<br>"
+        "<b>Important:</b> Model grid harus sesuai dengan grid di 'Calculating Condition'<br>"
+        "<b>Catatan:</b> Jika lokasi diluar model, gunakan nilai Vp terdekat<br>"
         "Contoh: examples/velocity_model_3d.txt",
         this
     );
     format3DLabel->setWordWrap(true);
     model3DLayout->addWidget(format3DLabel);
+    
+    // Location info label
+    model3DLocationLabel = new QLabel("<i>Set boundary di 'Calculating Condition' terlebih dahulu</i>", this);
+    model3DLocationLabel->setWordWrap(true);
+    model3DLocationLabel->setStyleSheet("QLabel { background-color: #fff3cd; padding: 8px; border-radius: 3px; }");
+    model3DLayout->addWidget(model3DLocationLabel);
     
     // Splitter for preview and plot
     QSplitter *splitter3D = new QSplitter(Qt::Horizontal, this);
@@ -494,6 +506,15 @@ void VelocityModelWidget::setupUI() {
 }
 
 void VelocityModelWidget::onModelTypeChanged(int index) {
+    // Clear all model data when switching to free memory
+    model1DData.clear();
+    model1DFilePath.clear();
+    velocity1DPlot->clearData();
+    
+    model3DData.clear();
+    model3DFilePath.clear();
+    velocity3DPlot->clearData();
+    
     modelStack->setCurrentIndex(index);
 }
 
@@ -599,9 +620,9 @@ void VelocityModelWidget::onLoad3DModel() {
         QStringList parts = line.split(',');
         if (parts.size() >= 4) {
             VelocityPoint3D point;
-            point.x = parts[0].trimmed().toDouble();
-            point.y = parts[1].trimmed().toDouble();
-            point.z = parts[2].trimmed().toDouble();
+            point.lat = parts[0].trimmed().toDouble();
+            point.lon = parts[1].trimmed().toDouble();
+            point.depth = parts[2].trimmed().toDouble();
             point.vp = parts[3].trimmed().toDouble();
             model3DData.append(point);
         }
@@ -624,9 +645,79 @@ void VelocityModelWidget::onLoad3DModel() {
     model3DPreview->setPlainText(previewContent);
     velocity3DPlot->setData(model3DData);
     
-    QMessageBox::information(this, "Success", 
-        QString("3D model loaded successfully!\nFile: %1\nPoints: %2")
-            .arg(fileName).arg(model3DData.size()));
+    // Validate grid size if boundary is set
+    if (boundarySet && currentBoundary) {
+        // Calculate expected grid size
+        double avgLat = (currentBoundary->yMin + currentBoundary->yMax) / 2.0;
+        double latRad = avgLat * M_PI / 180.0;
+        double xRangeKm = (currentBoundary->xMax - currentBoundary->xMin) * 111.320 * cos(latRad);
+        double yRangeKm = (currentBoundary->yMax - currentBoundary->yMin) * 110.574;
+        double zRangeKm = currentBoundary->depthMax - currentBoundary->depthMin;
+        
+        int expectedNX = static_cast<int>(xRangeKm / currentBoundary->gridSpacing) + 1;
+        int expectedNY = static_cast<int>(yRangeKm / currentBoundary->gridSpacing) + 1;
+        int expectedNZ = static_cast<int>(zRangeKm / currentBoundary->gridSpacing) + 1;
+        long long expectedTotal = static_cast<long long>(expectedNX) * expectedNY * expectedNZ;
+        
+        if (model3DData.size() != expectedTotal) {
+            QMessageBox::warning(this, "Grid Size Mismatch",
+                QString("⚠️ 3D model size tidak sesuai dengan grid!\n\n"
+                       "Expected: %1 points (%2×%3×%4)\n"
+                       "Loaded: %5 points\n\n"
+                       "Model harus sesuai dengan calculating condition grid.\n"
+                       "Grid spacing: %6 km")
+                    .arg(expectedTotal).arg(expectedNX).arg(expectedNY).arg(expectedNZ)
+                    .arg(model3DData.size())
+                    .arg(currentBoundary->gridSpacing, 0, 'f', 2));
+        } else {
+            QMessageBox::information(this, "Success", 
+                QString("✓ 3D model loaded successfully!\n\n"
+                       "File: %1\n"
+                       "Points: %2 (%3×%4×%5)\n"
+                       "Grid spacing: %6 km\n"
+                       "Grid size matches calculating condition!")
+                    .arg(fileName).arg(model3DData.size())
+                    .arg(expectedNX).arg(expectedNY).arg(expectedNZ)
+                    .arg(currentBoundary->gridSpacing, 0, 'f', 2));
+        }
+    } else {
+        QMessageBox::information(this, "Success", 
+            QString("3D model loaded successfully!\nFile: %1\nPoints: %2\n\n"
+                   "Set boundary di 'Calculating Condition' untuk validasi grid.")
+                .arg(fileName).arg(model3DData.size()));
+    }
+}
+
+void VelocityModelWidget::setBoundary(const BoundaryData &boundary) {
+    if (!currentBoundary) {
+        currentBoundary = new BoundaryData();
+    }
+    *currentBoundary = boundary;
+    boundarySet = true;
+    
+    // Update location label
+    double avgLat = (boundary.yMin + boundary.yMax) / 2.0;
+    double latRad = avgLat * M_PI / 180.0;
+    double xRangeKm = (boundary.xMax - boundary.xMin) * 111.320 * cos(latRad);
+    double yRangeKm = (boundary.yMax - boundary.yMin) * 110.574;
+    double zRangeKm = boundary.depthMax - boundary.depthMin;
+    
+    int expectedNX = static_cast<int>(xRangeKm / boundary.gridSpacing) + 1;
+    int expectedNY = static_cast<int>(yRangeKm / boundary.gridSpacing) + 1;
+    int expectedNZ = static_cast<int>(zRangeKm / boundary.gridSpacing) + 1;
+    
+    model3DLocationLabel->setText(
+        QString("<b>Calculating Condition Grid:</b><br>"
+                "Location: [%1°, %2°] × [%3°, %4°] × [%5, %6] km<br>"
+                "Grid: %7×%8×%9 points (spacing: %10 km)<br>"
+                "<i>Model 3D harus memiliki %11 points total</i>")
+            .arg(boundary.xMin, 0, 'f', 2).arg(boundary.xMax, 0, 'f', 2)
+            .arg(boundary.yMin, 0, 'f', 2).arg(boundary.yMax, 0, 'f', 2)
+            .arg(boundary.depthMin, 0, 'f', 1).arg(boundary.depthMax, 0, 'f', 1)
+            .arg(expectedNX).arg(expectedNY).arg(expectedNZ)
+            .arg(boundary.gridSpacing, 0, 'f', 2)
+            .arg(static_cast<long long>(expectedNX) * expectedNY * expectedNZ)
+    );
 }
 
 QString VelocityModelWidget::getModelType() const {

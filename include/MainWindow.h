@@ -57,8 +57,7 @@ private:
     MapViewer3D *mapViewer3D;
     ResultWidget *resultWidget;
     
-    // Right panel (3 parts)
-    QWidget *rightPanel;
+    // Right panel (3 parts) - now using splitter
     QTabWidget *topRightTabWidget;
     QTabWidget *bottomRightTabWidget;
     
