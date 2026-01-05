@@ -216,10 +216,66 @@ CMakeFiles/bismillah.dir/src/ResultWidget.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/bismillah.dir/src/ResultWidget.cpp.s"
 	/home/farhan/hpc_sdk/Linux_x86_64/24.7/compilers/bin/nvc++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/farhan/git/inversi/src/ResultWidget.cpp -o CMakeFiles/bismillah.dir/src/ResultWidget.cpp.s
 
+CMakeFiles/bismillah.dir/src/LocalInversionMethods.cpp.o: CMakeFiles/bismillah.dir/flags.make
+CMakeFiles/bismillah.dir/src/LocalInversionMethods.cpp.o: /home/farhan/git/inversi/src/LocalInversionMethods.cpp
+CMakeFiles/bismillah.dir/src/LocalInversionMethods.cpp.o: CMakeFiles/bismillah.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/farhan/git/inversi/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/bismillah.dir/src/LocalInversionMethods.cpp.o"
+	/home/farhan/hpc_sdk/Linux_x86_64/24.7/compilers/bin/nvc++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bismillah.dir/src/LocalInversionMethods.cpp.o -MF CMakeFiles/bismillah.dir/src/LocalInversionMethods.cpp.o.d -o CMakeFiles/bismillah.dir/src/LocalInversionMethods.cpp.o -c /home/farhan/git/inversi/src/LocalInversionMethods.cpp
+
+CMakeFiles/bismillah.dir/src/LocalInversionMethods.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/bismillah.dir/src/LocalInversionMethods.cpp.i"
+	/home/farhan/hpc_sdk/Linux_x86_64/24.7/compilers/bin/nvc++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/farhan/git/inversi/src/LocalInversionMethods.cpp > CMakeFiles/bismillah.dir/src/LocalInversionMethods.cpp.i
+
+CMakeFiles/bismillah.dir/src/LocalInversionMethods.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/bismillah.dir/src/LocalInversionMethods.cpp.s"
+	/home/farhan/hpc_sdk/Linux_x86_64/24.7/compilers/bin/nvc++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/farhan/git/inversi/src/LocalInversionMethods.cpp -o CMakeFiles/bismillah.dir/src/LocalInversionMethods.cpp.s
+
+CMakeFiles/bismillah.dir/src/GlobalInversionMethods.cpp.o: CMakeFiles/bismillah.dir/flags.make
+CMakeFiles/bismillah.dir/src/GlobalInversionMethods.cpp.o: /home/farhan/git/inversi/src/GlobalInversionMethods.cpp
+CMakeFiles/bismillah.dir/src/GlobalInversionMethods.cpp.o: CMakeFiles/bismillah.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/farhan/git/inversi/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/bismillah.dir/src/GlobalInversionMethods.cpp.o"
+	/home/farhan/hpc_sdk/Linux_x86_64/24.7/compilers/bin/nvc++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bismillah.dir/src/GlobalInversionMethods.cpp.o -MF CMakeFiles/bismillah.dir/src/GlobalInversionMethods.cpp.o.d -o CMakeFiles/bismillah.dir/src/GlobalInversionMethods.cpp.o -c /home/farhan/git/inversi/src/GlobalInversionMethods.cpp
+
+CMakeFiles/bismillah.dir/src/GlobalInversionMethods.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/bismillah.dir/src/GlobalInversionMethods.cpp.i"
+	/home/farhan/hpc_sdk/Linux_x86_64/24.7/compilers/bin/nvc++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/farhan/git/inversi/src/GlobalInversionMethods.cpp > CMakeFiles/bismillah.dir/src/GlobalInversionMethods.cpp.i
+
+CMakeFiles/bismillah.dir/src/GlobalInversionMethods.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/bismillah.dir/src/GlobalInversionMethods.cpp.s"
+	/home/farhan/hpc_sdk/Linux_x86_64/24.7/compilers/bin/nvc++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/farhan/git/inversi/src/GlobalInversionMethods.cpp -o CMakeFiles/bismillah.dir/src/GlobalInversionMethods.cpp.s
+
+CMakeFiles/bismillah.dir/src/GeneticAlgorithm.cpp.o: CMakeFiles/bismillah.dir/flags.make
+CMakeFiles/bismillah.dir/src/GeneticAlgorithm.cpp.o: /home/farhan/git/inversi/src/GeneticAlgorithm.cpp
+CMakeFiles/bismillah.dir/src/GeneticAlgorithm.cpp.o: CMakeFiles/bismillah.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/farhan/git/inversi/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object CMakeFiles/bismillah.dir/src/GeneticAlgorithm.cpp.o"
+	/home/farhan/hpc_sdk/Linux_x86_64/24.7/compilers/bin/nvc++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bismillah.dir/src/GeneticAlgorithm.cpp.o -MF CMakeFiles/bismillah.dir/src/GeneticAlgorithm.cpp.o.d -o CMakeFiles/bismillah.dir/src/GeneticAlgorithm.cpp.o -c /home/farhan/git/inversi/src/GeneticAlgorithm.cpp
+
+CMakeFiles/bismillah.dir/src/GeneticAlgorithm.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/bismillah.dir/src/GeneticAlgorithm.cpp.i"
+	/home/farhan/hpc_sdk/Linux_x86_64/24.7/compilers/bin/nvc++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/farhan/git/inversi/src/GeneticAlgorithm.cpp > CMakeFiles/bismillah.dir/src/GeneticAlgorithm.cpp.i
+
+CMakeFiles/bismillah.dir/src/GeneticAlgorithm.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/bismillah.dir/src/GeneticAlgorithm.cpp.s"
+	/home/farhan/hpc_sdk/Linux_x86_64/24.7/compilers/bin/nvc++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/farhan/git/inversi/src/GeneticAlgorithm.cpp -o CMakeFiles/bismillah.dir/src/GeneticAlgorithm.cpp.s
+
+CMakeFiles/bismillah.dir/src/CUDAInversionWrapper.cpp.o: CMakeFiles/bismillah.dir/flags.make
+CMakeFiles/bismillah.dir/src/CUDAInversionWrapper.cpp.o: /home/farhan/git/inversi/src/CUDAInversionWrapper.cpp
+CMakeFiles/bismillah.dir/src/CUDAInversionWrapper.cpp.o: CMakeFiles/bismillah.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/farhan/git/inversi/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building CXX object CMakeFiles/bismillah.dir/src/CUDAInversionWrapper.cpp.o"
+	/home/farhan/hpc_sdk/Linux_x86_64/24.7/compilers/bin/nvc++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bismillah.dir/src/CUDAInversionWrapper.cpp.o -MF CMakeFiles/bismillah.dir/src/CUDAInversionWrapper.cpp.o.d -o CMakeFiles/bismillah.dir/src/CUDAInversionWrapper.cpp.o -c /home/farhan/git/inversi/src/CUDAInversionWrapper.cpp
+
+CMakeFiles/bismillah.dir/src/CUDAInversionWrapper.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/bismillah.dir/src/CUDAInversionWrapper.cpp.i"
+	/home/farhan/hpc_sdk/Linux_x86_64/24.7/compilers/bin/nvc++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/farhan/git/inversi/src/CUDAInversionWrapper.cpp > CMakeFiles/bismillah.dir/src/CUDAInversionWrapper.cpp.i
+
+CMakeFiles/bismillah.dir/src/CUDAInversionWrapper.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/bismillah.dir/src/CUDAInversionWrapper.cpp.s"
+	/home/farhan/hpc_sdk/Linux_x86_64/24.7/compilers/bin/nvc++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/farhan/git/inversi/src/CUDAInversionWrapper.cpp -o CMakeFiles/bismillah.dir/src/CUDAInversionWrapper.cpp.s
+
 CMakeFiles/bismillah.dir/bismillah_autogen/EWIEGA46WW/qrc_app.cpp.o: CMakeFiles/bismillah.dir/flags.make
 CMakeFiles/bismillah.dir/bismillah_autogen/EWIEGA46WW/qrc_app.cpp.o: bismillah_autogen/EWIEGA46WW/qrc_app.cpp
 CMakeFiles/bismillah.dir/bismillah_autogen/EWIEGA46WW/qrc_app.cpp.o: CMakeFiles/bismillah.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/farhan/git/inversi/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/bismillah.dir/bismillah_autogen/EWIEGA46WW/qrc_app.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/farhan/git/inversi/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building CXX object CMakeFiles/bismillah.dir/bismillah_autogen/EWIEGA46WW/qrc_app.cpp.o"
 	/home/farhan/hpc_sdk/Linux_x86_64/24.7/compilers/bin/nvc++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/bismillah.dir/bismillah_autogen/EWIEGA46WW/qrc_app.cpp.o -MF CMakeFiles/bismillah.dir/bismillah_autogen/EWIEGA46WW/qrc_app.cpp.o.d -o CMakeFiles/bismillah.dir/bismillah_autogen/EWIEGA46WW/qrc_app.cpp.o -c /home/farhan/git/inversi/build/bismillah_autogen/EWIEGA46WW/qrc_app.cpp
 
 CMakeFiles/bismillah.dir/bismillah_autogen/EWIEGA46WW/qrc_app.cpp.i: cmake_force
@@ -242,6 +298,10 @@ bismillah_OBJECTS = \
 "CMakeFiles/bismillah.dir/src/VelocityModelWidget.cpp.o" \
 "CMakeFiles/bismillah.dir/src/DataInputWidget.cpp.o" \
 "CMakeFiles/bismillah.dir/src/ResultWidget.cpp.o" \
+"CMakeFiles/bismillah.dir/src/LocalInversionMethods.cpp.o" \
+"CMakeFiles/bismillah.dir/src/GlobalInversionMethods.cpp.o" \
+"CMakeFiles/bismillah.dir/src/GeneticAlgorithm.cpp.o" \
+"CMakeFiles/bismillah.dir/src/CUDAInversionWrapper.cpp.o" \
 "CMakeFiles/bismillah.dir/bismillah_autogen/EWIEGA46WW/qrc_app.cpp.o"
 
 # External object files for target bismillah
@@ -257,15 +317,20 @@ bismillah: CMakeFiles/bismillah.dir/src/MethodWidget.cpp.o
 bismillah: CMakeFiles/bismillah.dir/src/VelocityModelWidget.cpp.o
 bismillah: CMakeFiles/bismillah.dir/src/DataInputWidget.cpp.o
 bismillah: CMakeFiles/bismillah.dir/src/ResultWidget.cpp.o
+bismillah: CMakeFiles/bismillah.dir/src/LocalInversionMethods.cpp.o
+bismillah: CMakeFiles/bismillah.dir/src/GlobalInversionMethods.cpp.o
+bismillah: CMakeFiles/bismillah.dir/src/GeneticAlgorithm.cpp.o
+bismillah: CMakeFiles/bismillah.dir/src/CUDAInversionWrapper.cpp.o
 bismillah: CMakeFiles/bismillah.dir/bismillah_autogen/EWIEGA46WW/qrc_app.cpp.o
 bismillah: CMakeFiles/bismillah.dir/build.make
 bismillah: /usr/lib/x86_64-linux-gnu/libQt6Widgets.so.6.4.2
+bismillah: libinversion_cuda.a
 bismillah: /usr/lib/x86_64-linux-gnu/libQt6Gui.so.6.4.2
 bismillah: /usr/lib/x86_64-linux-gnu/libQt6Core.so.6.4.2
 bismillah: /usr/lib/x86_64-linux-gnu/libGLX.so
 bismillah: /usr/lib/x86_64-linux-gnu/libOpenGL.so
 bismillah: CMakeFiles/bismillah.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/farhan/git/inversi/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Linking CXX executable bismillah"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/farhan/git/inversi/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Linking CXX executable bismillah"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/bismillah.dir/link.txt --verbose=$(VERBOSE)
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold "Copying maps directory"
 	/usr/bin/cmake -E copy_directory /home/farhan/git/inversi/maps /home/farhan/git/inversi/build/maps

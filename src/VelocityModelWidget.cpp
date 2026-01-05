@@ -195,6 +195,7 @@ void Velocity3DPlot::clearData() {
     update();
 }
 
+// Bagian paintEvent di Velocity3DPlot yang diperbaiki
 void Velocity3DPlot::paintEvent(QPaintEvent *event) {
     Q_UNUSED(event);
     
@@ -236,10 +237,10 @@ void Velocity3DPlot::paintEvent(QPaintEvent *event) {
     
     // Draw points with colors
     for (const auto &pt : velocityPoints) {
-        // Normalize coordinates to [0, 1]
-        double nx = (pt.x - minX) / (maxX - minX);
-        double ny = (pt.y - minY) / (maxY - minY);
-        double nz = (pt.z - minZ) / (maxZ - minZ);
+        // Normalize coordinates to [0, 1] - FIXED: use lat/lon/depth
+        double nx = (pt.lon - minLon) / (maxLon - minLon);
+        double ny = (pt.lat - minLat) / (maxLat - minLat);
+        double nz = (pt.depth - minDepth) / (maxDepth - minDepth);
         
         QPointF screenPos = project3D(nx, ny, nz);
         

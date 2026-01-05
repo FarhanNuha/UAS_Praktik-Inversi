@@ -10,8 +10,12 @@ set(CMAKE_DEPENDS_LANGUAGES
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/farhan/git/inversi/build/bismillah_autogen/EWIEGA46WW/qrc_app.cpp" "CMakeFiles/bismillah.dir/bismillah_autogen/EWIEGA46WW/qrc_app.cpp.o" "gcc" "CMakeFiles/bismillah.dir/bismillah_autogen/EWIEGA46WW/qrc_app.cpp.o.d"
   "/home/farhan/git/inversi/build/bismillah_autogen/mocs_compilation.cpp" "CMakeFiles/bismillah.dir/bismillah_autogen/mocs_compilation.cpp.o" "gcc" "CMakeFiles/bismillah.dir/bismillah_autogen/mocs_compilation.cpp.o.d"
+  "/home/farhan/git/inversi/src/CUDAInversionWrapper.cpp" "CMakeFiles/bismillah.dir/src/CUDAInversionWrapper.cpp.o" "gcc" "CMakeFiles/bismillah.dir/src/CUDAInversionWrapper.cpp.o.d"
   "/home/farhan/git/inversi/src/CalculatingConditionWidget.cpp" "CMakeFiles/bismillah.dir/src/CalculatingConditionWidget.cpp.o" "gcc" "CMakeFiles/bismillah.dir/src/CalculatingConditionWidget.cpp.o.d"
   "/home/farhan/git/inversi/src/DataInputWidget.cpp" "CMakeFiles/bismillah.dir/src/DataInputWidget.cpp.o" "gcc" "CMakeFiles/bismillah.dir/src/DataInputWidget.cpp.o.d"
+  "/home/farhan/git/inversi/src/GeneticAlgorithm.cpp" "CMakeFiles/bismillah.dir/src/GeneticAlgorithm.cpp.o" "gcc" "CMakeFiles/bismillah.dir/src/GeneticAlgorithm.cpp.o.d"
+  "/home/farhan/git/inversi/src/GlobalInversionMethods.cpp" "CMakeFiles/bismillah.dir/src/GlobalInversionMethods.cpp.o" "gcc" "CMakeFiles/bismillah.dir/src/GlobalInversionMethods.cpp.o.d"
+  "/home/farhan/git/inversi/src/LocalInversionMethods.cpp" "CMakeFiles/bismillah.dir/src/LocalInversionMethods.cpp.o" "gcc" "CMakeFiles/bismillah.dir/src/LocalInversionMethods.cpp.o.d"
   "/home/farhan/git/inversi/src/MainWindow.cpp" "CMakeFiles/bismillah.dir/src/MainWindow.cpp.o" "gcc" "CMakeFiles/bismillah.dir/src/MainWindow.cpp.o.d"
   "/home/farhan/git/inversi/src/MapViewer2D.cpp" "CMakeFiles/bismillah.dir/src/MapViewer2D.cpp.o" "gcc" "CMakeFiles/bismillah.dir/src/MapViewer2D.cpp.o.d"
   "/home/farhan/git/inversi/src/MapViewer3D.cpp" "CMakeFiles/bismillah.dir/src/MapViewer3D.cpp.o" "gcc" "CMakeFiles/bismillah.dir/src/MapViewer3D.cpp.o.d"
