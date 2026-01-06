@@ -1,4 +1,5 @@
 #include "DataInputWidget.h"
+#include "ComputationEngine.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QHeaderView>
@@ -8,11 +9,23 @@
 #include <QTextStream>
 #include <QLabel>
 #include <QRegularExpression>
+#include <QProgressDialog>
 
 DataInputWidget::DataInputWidget(QWidget *parent)
-    : QWidget(parent)
+    : QWidget(parent), computationEngine(nullptr)
 {
     setupUI();
+    
+    // Create computation engine
+    computationEngine = new ComputationEngine(this);
+    
+    // Connect signals
+    connect(computationEngine, &ComputationEngine::progressUpdated,
+            this, &DataInputWidget::onComputationProgress);
+    connect(computationEngine, &ComputationEngine::computationFinished,
+            this, &DataInputWidget::onComputationFinished);
+    connect(computationEngine, &ComputationEngine::computationError,
+            this, &DataInputWidget::onComputationError);
 }
 
 DataInputWidget::~DataInputWidget() {
@@ -117,7 +130,7 @@ void DataInputWidget::onLoadDataFile() {
     }
     
     QTextStream in(&file);
-    QString header = in.readLine(); // Skip header
+    QString header = in.readLine();
     
     // Check header format
     QString headerLower = header.toLower();
@@ -145,10 +158,8 @@ void DataInputWidget::onLoadDataFile() {
         
         QStringList parts;
         if (useSpace) {
-            // Split by whitespace (space or tab), remove empty entries
             parts = line.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
         } else {
-            // Split by comma
             parts = line.split(',');
         }
         
@@ -183,7 +194,6 @@ void DataInputWidget::onAddRow() {
     int row = stationTable->rowCount();
     stationTable->insertRow(row);
     
-    // Set default values
     stationTable->setItem(row, 0, new QTableWidgetItem(QString("STA%1").arg(row + 1)));
     stationTable->setItem(row, 1, new QTableWidgetItem("0.0"));
     stationTable->setItem(row, 2, new QTableWidgetItem("0.0"));
@@ -206,24 +216,180 @@ void DataInputWidget::onComputeClicked() {
         return;
     }
     
+    if (!boundaryData || !methodData || !velocityData) {
+        QMessageBox::warning(this, "Warning", 
+            "Setup tidak lengkap!\n\n"
+            "Pastikan sudah:\n"
+            "• Set Calculating Condition\n"
+            "• Pilih Metode Inversi\n"
+            "• Set Velocity Model");
+        return;
+    }
+    
     QMessageBox::StandardButton reply = QMessageBox::question(
         this,
         "Konfirmasi Komputasi",
-        QString("Mulai komputasi dengan %1 stasiun?\n\n"
-               "Pastikan:\n"
-               "• Calculating Condition sudah di-commit\n"
-               "• Metode sudah dipilih\n"
-               "• Velocity model sudah di-set\n\n"
-               "Proses ini mungkin memakan waktu lama.")
-            .arg(stations.size()),
+        QString("Mulai komputasi inversi hiposenter?\n\n"
+               "Jumlah stasiun: %1\n"
+               "Metode: %2\n"
+               "Model kecepatan: %3\n\n"
+               "Proses ini mungkin memakan waktu.")
+            .arg(stations.size())
+            .arg(methodData->methodName)
+            .arg(velocityData->modelType),
         QMessageBox::Yes | QMessageBox::No
     );
     
-    if (reply == QMessageBox::Yes) {
-        emit computationRequested();
-        QMessageBox::information(this, "Computation", 
-            "Komputasi dimulai!\n(Placeholder - implementasi perhitungan akan ditambahkan)");
+    if (reply == QMessageBox::No) {
+        return;
     }
+    
+    // Setup computation engine
+    computationEngine->setBoundary(*boundaryData);
+    computationEngine->setStations(stations);
+    
+    // Set velocity model
+    if (velocityData->modelType == "Homogen") {
+        computationEngine->setVelocityModel("Homogen", velocityData->homogeneousVp);
+    }
+    else if (velocityData->modelType == "1D") {
+        computationEngine->setVelocityModel1D(velocityData->layers1D);
+    }
+    else if (velocityData->modelType == "3D") {
+        computationEngine->setVelocityModel3D(velocityData->points3D);
+    }
+    
+    // Create progress dialog
+    progressDialog = new QProgressDialog("Memulai komputasi...", "Cancel", 0, 100, this);
+    progressDialog->setWindowTitle("Computation Progress");
+    progressDialog->setWindowModality(Qt::WindowModal);
+    progressDialog->setMinimumDuration(0);
+    progressDialog->show();
+    
+    connect(progressDialog, &QProgressDialog::canceled, this, [this]() {
+        QMessageBox::information(this, "Cancelled", "Komputasi dibatalkan oleh user");
+    });
+    
+    // Start computation based on method
+    QString approach = methodData->approach;
+    QString method = methodData->methodName;
+    
+    if (approach == "Pendekatan Lokal") {
+        if (method == "Gauss Newton") {
+            computationEngine->computeGaussNewton(1e-6, 100);
+        }
+        else if (method == "Steepest Descent") {
+            computationEngine->computeSteepestDescent(1e-5, 200, 0.01);
+        }
+        else if (method == "Levenberg Marquardt") {
+            computationEngine->computeLevenbergMarquardt(1e-6, 100, 0.01);
+        }
+    }
+    else if (approach == "Pendekatan Global") {
+        if (method == "Grid Search") {
+            bool useMC = methodData->useMonteCarloSampling;
+            int samples = methodData->monteCarloSamples;
+            computationEngine->computeGridSearch(useMC, samples);
+        }
+        // Add other global methods as needed
+    }
+}
+
+void DataInputWidget::onComputationProgress(int percent, const QString &message) {
+    if (progressDialog) {
+        progressDialog->setValue(percent);
+        progressDialog->setLabelText(message);
+    }
+}
+
+void DataInputWidget::onComputationFinished(const HypocenterResult &result) {
+    if (progressDialog) {
+        progressDialog->close();
+        delete progressDialog;
+        progressDialog = nullptr;
+    }
+    
+    // Format result text
+    QString resultText = QString(
+        "╔═══════════════════════════════════════════════════════════════╗\n"
+        "║       HASIL INVERSI LOKASI HIPOSENTER GEMPABUMI               ║\n"
+        "╚═══════════════════════════════════════════════════════════════╝\n\n"
+        "METODE INVERSI\n"
+        "──────────────────────────────────────────────────────────────\n"
+        "  Pendekatan    : %1\n"
+        "  Metode        : %2\n"
+        "  Iterasi       : %3\n"
+        "  Konvergensi   : %4\n\n"
+        "LOKASI HIPOSENTER\n"
+        "──────────────────────────────────────────────────────────────\n"
+        "  Longitude     : %5°\n"
+        "  Latitude      : %6°\n"
+        "  Depth         : %7 km\n"
+        "  Origin Time   : %8 detik dari first arrival\n\n"
+        "STATISTIK MISFIT\n"
+        "──────────────────────────────────────────────────────────────\n"
+        "  RMS Misfit    : %9 detik\n"
+        "  Mean Residual : %10 detik\n"
+        "  Std Residual  : %11 detik\n"
+        "  Max Residual  : %12 detik\n"
+        "  Min Residual  : %13 detik\n\n"
+    ).arg(methodData->approach)
+     .arg(methodData->methodName)
+     .arg(result.iterations)
+     .arg(result.converged ? "Ya ✓" : "Tidak ✗")
+     .arg(result.x, 0, 'f', 6)
+     .arg(result.y, 0, 'f', 6)
+     .arg(result.z, 0, 'f', 3)
+     .arg(result.originTime, 0, 'f', 3)
+     .arg(result.rms, 0, 'f', 6)
+     .arg(result.residuals.isEmpty() ? 0.0 : 
+          std::accumulate(result.residuals.begin(), result.residuals.end(), 0.0) / result.residuals.size(), 0, 'f', 6)
+     .arg(0.0, 0, 'f', 6) // Calculate std
+     .arg(result.residuals.isEmpty() ? 0.0 : 
+          *std::max_element(result.residuals.begin(), result.residuals.end()), 0, 'f', 6)
+     .arg(result.residuals.isEmpty() ? 0.0 : 
+          *std::min_element(result.residuals.begin(), result.residuals.end()), 0, 'f', 6);
+    
+    // Add per-station residuals
+    resultText += "RESIDUAL PER STASIUN\n";
+    resultText += "──────────────────────────────────────────────────────────────\n";
+    for (int i = 0; i < stations.size() && i < result.residuals.size(); ++i) {
+        resultText += QString("  %1: %2 detik\n")
+            .arg(stations[i].name, -15)
+            .arg(result.residuals[i], 8, 'f', 6);
+    }
+    resultText += "\n";
+    resultText += "═══════════════════════════════════════════════════════════════\n";
+    resultText += QString("Waktu komputasi: %1\n")
+        .arg(QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss"));
+    resultText += "═══════════════════════════════════════════════════════════════\n";
+    
+    // Emit result to be displayed
+    emit computationComplete(resultText, result);
+    
+    QMessageBox::information(this, "Computation Complete", 
+        QString("Inversi hiposenter selesai!\n\n"
+               "Lokasi: %1°, %2°\n"
+               "Depth: %3 km\n"
+               "RMS: %4 detik\n"
+               "Iterasi: %5\n\n"
+               "Lihat tab 'Hasil' untuk detail lengkap.")
+            .arg(result.x, 0, 'f', 4)
+            .arg(result.y, 0, 'f', 4)
+            .arg(result.z, 0, 'f', 2)
+            .arg(result.rms, 0, 'f', 6)
+            .arg(result.iterations));
+}
+
+void DataInputWidget::onComputationError(const QString &error) {
+    if (progressDialog) {
+        progressDialog->close();
+        delete progressDialog;
+        progressDialog = nullptr;
+    }
+    
+    QMessageBox::critical(this, "Computation Error", 
+        QString("Terjadi error saat komputasi:\n\n%1").arg(error));
 }
 
 void DataInputWidget::onTableDataChanged() {
@@ -252,7 +418,7 @@ void DataInputWidget::updateStationsFromTable() {
         station.longitude = lonItem->text().toDouble(&ok2);
         
         if (!ok1 || !ok2) {
-            continue; // Skip invalid entries
+            continue;
         }
         
         station.arrivalTime = timeItem->text();
@@ -260,13 +426,41 @@ void DataInputWidget::updateStationsFromTable() {
         stations.append(station);
     }
     
-    // Enable compute button if we have valid stations
     computeButton->setEnabled(!stations.isEmpty());
     
-    // Emit signal to update map viewers
     if (!stations.isEmpty()) {
         emit stationsLoaded(stations);
     }
+}
+
+void DataInputWidget::setBoundaryData(const BoundaryData &boundary) {
+    if (!boundaryData) {
+        boundaryData = new BoundaryData();
+    }
+    *boundaryData = boundary;
+}
+
+void DataInputWidget::setMethodData(const QString &approach, const QString &method, 
+                                   bool useMC, int mcSamples) {
+    if (!methodData) {
+        methodData = new MethodData();
+    }
+    methodData->approach = approach;
+    methodData->methodName = method;
+    methodData->useMonteCarloSampling = useMC;
+    methodData->monteCarloSamples = mcSamples;
+}
+
+void DataInputWidget::setVelocityData(const QString &type, double vp,
+                                     const QVector<VelocityLayer1D> &layers,
+                                     const QVector<VelocityPoint3D> &points) {
+    if (!velocityData) {
+        velocityData = new VelocityData();
+    }
+    velocityData->modelType = type;
+    velocityData->homogeneousVp = vp;
+    velocityData->layers1D = layers;
+    velocityData->points3D = points;
 }
 
 QVector<StationData> DataInputWidget::getStationData() const {

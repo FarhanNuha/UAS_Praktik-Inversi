@@ -8,9 +8,8 @@
 #include <QScrollArea>
 #include <QCheckBox>
 #include <QLabel>
-
-// Forward declaration
-struct BoundaryData;
+#include <QPushButton>
+#include "SharedTypes.h"
 
 class MethodWidget : public QWidget {
     Q_OBJECT
@@ -23,6 +22,10 @@ public:
     QString getMethod() const;
     QString getGlobalSubMethod() const;
 
+signals:
+    void methodChanged(const QString &approach, const QString &method);
+    void methodCommitted(const QString &approach, const QString &method, bool useMonteCarlo, int samples);
+
 public slots:
     void updateGridSize(const BoundaryData &boundary);
 
@@ -32,6 +35,8 @@ private slots:
     void onGlobalMethodChanged(int index);
     void onSAVariantChanged(int index);
     void onGAVariantChanged(int index);
+    void emitMethodChanged();
+    void onSelectClicked();
 
 private:
     void setupUI();
@@ -82,6 +87,7 @@ private:
     QWidget *standardGAParams;
     QWidget *steadyStateGAParams;
     QWidget *spea2Params;
+    QPushButton *selectButton;
 };
 
 #endif // METHODWIDGET_H

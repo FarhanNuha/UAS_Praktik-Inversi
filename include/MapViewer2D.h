@@ -7,20 +7,7 @@
 #include <QPointF>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
-
-struct BoundaryData {
-    double xMin, xMax;
-    double yMin, yMax;
-    double depthMin, depthMax;
-    double gridSpacing;
-};
-
-struct StationData {
-    QString name;
-    double latitude;
-    double longitude;
-    QString arrivalTime;
-};
+#include "SharedTypes.h"
 
 class MapCanvas : public QWidget {
     Q_OBJECT

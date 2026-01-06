@@ -1,0 +1,78 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"jsonFile" : "directory-.-Release-f5ebdc15457944623624.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				}
+			],
+			"name" : "Release",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "bismillah",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "bismillah::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-bismillah-Release-59d844f26f1119e2a0e3.json",
+					"name" : "bismillah",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "bismillah_autogen::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-bismillah_autogen-Release-010700e951d375e1e262.json",
+					"name" : "bismillah_autogen",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "bismillah_autogen_timestamp_deps::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-bismillah_autogen_timestamp_deps-Release-ddb6750214bd6094c316.json",
+					"name" : "bismillah_autogen_timestamp_deps",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/home/farhan/git/inversi/build",
+		"source" : "/home/farhan/git/inversi"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 6
+	}
+}

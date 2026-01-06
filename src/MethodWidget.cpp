@@ -7,7 +7,9 @@
 #include <QDoubleValidator>
 #include <QIntValidator>
 #include <QCheckBox>
+#include <QPushButton>
 #include <cmath>
+#include <QMessageBox>
 
 MethodWidget::MethodWidget(QWidget *parent)
     : QWidget(parent)
@@ -59,6 +61,30 @@ void MethodWidget::setupUI() {
     QVBoxLayout *outerLayout = new QVBoxLayout(this);
     outerLayout->setContentsMargins(0, 0, 0, 0);
     outerLayout->addWidget(scrollArea);
+
+    // Bottom select button ("Pilih") similar to Commit behavior
+    QHBoxLayout *bottomLayout = new QHBoxLayout();
+    bottomLayout->addStretch();
+    selectButton = new QPushButton("Pilih", this);
+    selectButton->setMinimumHeight(40);
+    selectButton->setMaximumWidth(120);
+    selectButton->setStyleSheet(
+        "QPushButton { background-color: #4CAF50; color: white; font-weight: bold; border-radius: 5px; padding: 5px; }"
+        "QPushButton:hover { background-color: #45a049; }"
+        "QPushButton:pressed { background-color: #3d8b40; }"
+    );
+    bottomLayout->addWidget(selectButton);
+    bottomLayout->addStretch();
+    outerLayout->addLayout(bottomLayout);
+
+
+connect(approachCombo, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &MethodWidget::emitMethodChanged);
+connect(localMethodCombo, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &MethodWidget::emitMethodChanged);
+connect(globalMethodCombo, QOverload<int>::of(&QComboBox::currentIndexChanged),
+        this, &MethodWidget::emitMethodChanged);
+    connect(selectButton, &QPushButton::clicked, this, &MethodWidget::onSelectClicked);
 }
 
 void MethodWidget::createLocalMethodWidgets() {
@@ -644,4 +670,30 @@ void MethodWidget::updateGridSize(const BoundaryData &boundary) {
     // Auto-suggest sample size (10% of grid or max 10000)
     int suggestedSample = std::min(static_cast<int>(totalGrid * 0.1), 10000);
     sampleSizeEdit->setText(QString::number(suggestedSample));
+}
+
+void MethodWidget::emitMethodChanged() {
+    QString approach = getApproach();
+    QString method = getMethod();
+    emit methodChanged(approach, method);
+}
+
+void MethodWidget::onSelectClicked() {
+    QString approach = getApproach();
+    QString method = getMethod();
+
+    bool useMC = false;
+    int samples = 1000;
+    if (method == "Grid Search") {
+        useMC = monteCarloCheck->isChecked();
+        samples = sampleSizeEdit->text().toInt();
+    }
+
+    emit methodCommitted(approach, method, useMC, samples);
+
+    QMessageBox::information(this, "Method Selected",
+                             QString("Metode dipilih:\n%1 - %2").arg(approach).arg(method));
+
+    // Optionally disable further selection to indicate committing
+    selectButton->setEnabled(false);
 }

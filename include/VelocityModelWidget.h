@@ -9,19 +9,7 @@
 #include <QTextEdit>
 #include <QVector>
 #include <QLabel>
-
-// Forward declaration
-struct BoundaryData;
-
-struct VelocityLayer1D {
-    double vp;
-    double maxDepth;
-};
-
-struct VelocityPoint3D {
-    double lat, lon, depth;
-    double vp;
-};
+#include "SharedTypes.h"
 
 class Velocity1DPlot : public QWidget {
     Q_OBJECT
@@ -66,6 +54,8 @@ private:
     bool isRotating;
     QPoint lastMousePos;
     
+    double minX, maxX, minY, maxY, minZ, maxZ;
+    
     QColor getColorForVelocity(double vp, double minVp, double maxVp) const;
     QPointF project3D(double x, double y, double z) const;
 };
@@ -86,10 +76,15 @@ public:
     
     void setBoundary(const BoundaryData &boundary);
 
+signals:
+    void modelChanged(const QString &modelType);
+    void modelCommitted(const QString &modelType);
+
 private slots:
     void onModelTypeChanged(int index);
     void onLoad1DModel();
     void onLoad3DModel();
+    void onSelectClicked();
 
 private:
     void setupUI();
@@ -121,6 +116,7 @@ private:
     // Boundary for grid validation
     BoundaryData *currentBoundary;
     bool boundarySet;
+    QPushButton *selectButton;
 };
 
-#endif // VELOCITYMODELWIDGET_H
+#endif // VELOCITYMODELWIDGET_H // VELOCITYMODELWIDGET_H

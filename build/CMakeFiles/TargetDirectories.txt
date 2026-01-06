@@ -1,8 +1,5 @@
 /home/farhan/git/inversi/build/CMakeFiles/bismillah.dir
-/home/farhan/git/inversi/build/CMakeFiles/inversion_cuda.dir
 /home/farhan/git/inversi/build/CMakeFiles/edit_cache.dir
 /home/farhan/git/inversi/build/CMakeFiles/rebuild_cache.dir
 /home/farhan/git/inversi/build/CMakeFiles/bismillah_autogen_timestamp_deps.dir
 /home/farhan/git/inversi/build/CMakeFiles/bismillah_autogen.dir
-/home/farhan/git/inversi/build/CMakeFiles/inversion_cuda_autogen_timestamp_deps.dir
-/home/farhan/git/inversi/build/CMakeFiles/inversion_cuda_autogen.dir

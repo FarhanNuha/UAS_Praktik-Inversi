@@ -130,19 +130,6 @@ bismillah/fast:
 .PHONY : bismillah/fast
 
 #=============================================================================
-# Target rules for targets named inversion_cuda
-
-# Build rule for target.
-inversion_cuda: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 inversion_cuda
-.PHONY : inversion_cuda
-
-# fast build rule for target.
-inversion_cuda/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/inversion_cuda.dir/build.make CMakeFiles/inversion_cuda.dir/build
-.PHONY : inversion_cuda/fast
-
-#=============================================================================
 # Target rules for targets named bismillah_autogen_timestamp_deps
 
 # Build rule for target.
@@ -167,32 +154,6 @@ bismillah_autogen: cmake_check_build_system
 bismillah_autogen/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/bismillah_autogen.dir/build.make CMakeFiles/bismillah_autogen.dir/build
 .PHONY : bismillah_autogen/fast
-
-#=============================================================================
-# Target rules for targets named inversion_cuda_autogen_timestamp_deps
-
-# Build rule for target.
-inversion_cuda_autogen_timestamp_deps: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 inversion_cuda_autogen_timestamp_deps
-.PHONY : inversion_cuda_autogen_timestamp_deps
-
-# fast build rule for target.
-inversion_cuda_autogen_timestamp_deps/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/inversion_cuda_autogen_timestamp_deps.dir/build.make CMakeFiles/inversion_cuda_autogen_timestamp_deps.dir/build
-.PHONY : inversion_cuda_autogen_timestamp_deps/fast
-
-#=============================================================================
-# Target rules for targets named inversion_cuda_autogen
-
-# Build rule for target.
-inversion_cuda_autogen: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 inversion_cuda_autogen
-.PHONY : inversion_cuda_autogen
-
-# fast build rule for target.
-inversion_cuda_autogen/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/inversion_cuda_autogen.dir/build.make CMakeFiles/inversion_cuda_autogen.dir/build
-.PHONY : inversion_cuda_autogen/fast
 
 bismillah_autogen/EWIEGA46WW/qrc_app.o: bismillah_autogen/EWIEGA46WW/qrc_app.cpp.o
 .PHONY : bismillah_autogen/EWIEGA46WW/qrc_app.o
@@ -242,54 +203,6 @@ bismillah_autogen/mocs_compilation.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/bismillah.dir/build.make CMakeFiles/bismillah.dir/bismillah_autogen/mocs_compilation.cpp.s
 .PHONY : bismillah_autogen/mocs_compilation.cpp.s
 
-inversion_cuda_autogen/mocs_compilation.o: inversion_cuda_autogen/mocs_compilation.cpp.o
-.PHONY : inversion_cuda_autogen/mocs_compilation.o
-
-# target to build an object file
-inversion_cuda_autogen/mocs_compilation.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/inversion_cuda.dir/build.make CMakeFiles/inversion_cuda.dir/inversion_cuda_autogen/mocs_compilation.cpp.o
-.PHONY : inversion_cuda_autogen/mocs_compilation.cpp.o
-
-inversion_cuda_autogen/mocs_compilation.i: inversion_cuda_autogen/mocs_compilation.cpp.i
-.PHONY : inversion_cuda_autogen/mocs_compilation.i
-
-# target to preprocess a source file
-inversion_cuda_autogen/mocs_compilation.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/inversion_cuda.dir/build.make CMakeFiles/inversion_cuda.dir/inversion_cuda_autogen/mocs_compilation.cpp.i
-.PHONY : inversion_cuda_autogen/mocs_compilation.cpp.i
-
-inversion_cuda_autogen/mocs_compilation.s: inversion_cuda_autogen/mocs_compilation.cpp.s
-.PHONY : inversion_cuda_autogen/mocs_compilation.s
-
-# target to generate assembly for a file
-inversion_cuda_autogen/mocs_compilation.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/inversion_cuda.dir/build.make CMakeFiles/inversion_cuda.dir/inversion_cuda_autogen/mocs_compilation.cpp.s
-.PHONY : inversion_cuda_autogen/mocs_compilation.cpp.s
-
-src/CUDAInversionWrapper.o: src/CUDAInversionWrapper.cpp.o
-.PHONY : src/CUDAInversionWrapper.o
-
-# target to build an object file
-src/CUDAInversionWrapper.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bismillah.dir/build.make CMakeFiles/bismillah.dir/src/CUDAInversionWrapper.cpp.o
-.PHONY : src/CUDAInversionWrapper.cpp.o
-
-src/CUDAInversionWrapper.i: src/CUDAInversionWrapper.cpp.i
-.PHONY : src/CUDAInversionWrapper.i
-
-# target to preprocess a source file
-src/CUDAInversionWrapper.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bismillah.dir/build.make CMakeFiles/bismillah.dir/src/CUDAInversionWrapper.cpp.i
-.PHONY : src/CUDAInversionWrapper.cpp.i
-
-src/CUDAInversionWrapper.s: src/CUDAInversionWrapper.cpp.s
-.PHONY : src/CUDAInversionWrapper.s
-
-# target to generate assembly for a file
-src/CUDAInversionWrapper.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bismillah.dir/build.make CMakeFiles/bismillah.dir/src/CUDAInversionWrapper.cpp.s
-.PHONY : src/CUDAInversionWrapper.cpp.s
-
 src/CalculatingConditionWidget.o: src/CalculatingConditionWidget.cpp.o
 .PHONY : src/CalculatingConditionWidget.o
 
@@ -313,6 +226,30 @@ src/CalculatingConditionWidget.s: src/CalculatingConditionWidget.cpp.s
 src/CalculatingConditionWidget.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/bismillah.dir/build.make CMakeFiles/bismillah.dir/src/CalculatingConditionWidget.cpp.s
 .PHONY : src/CalculatingConditionWidget.cpp.s
+
+src/ComputationEngine.o: src/ComputationEngine.cpp.o
+.PHONY : src/ComputationEngine.o
+
+# target to build an object file
+src/ComputationEngine.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bismillah.dir/build.make CMakeFiles/bismillah.dir/src/ComputationEngine.cpp.o
+.PHONY : src/ComputationEngine.cpp.o
+
+src/ComputationEngine.i: src/ComputationEngine.cpp.i
+.PHONY : src/ComputationEngine.i
+
+# target to preprocess a source file
+src/ComputationEngine.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bismillah.dir/build.make CMakeFiles/bismillah.dir/src/ComputationEngine.cpp.i
+.PHONY : src/ComputationEngine.cpp.i
+
+src/ComputationEngine.s: src/ComputationEngine.cpp.s
+.PHONY : src/ComputationEngine.s
+
+# target to generate assembly for a file
+src/ComputationEngine.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bismillah.dir/build.make CMakeFiles/bismillah.dir/src/ComputationEngine.cpp.s
+.PHONY : src/ComputationEngine.cpp.s
 
 src/DataInputWidget.o: src/DataInputWidget.cpp.o
 .PHONY : src/DataInputWidget.o
@@ -338,77 +275,29 @@ src/DataInputWidget.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/bismillah.dir/build.make CMakeFiles/bismillah.dir/src/DataInputWidget.cpp.s
 .PHONY : src/DataInputWidget.cpp.s
 
-src/GeneticAlgorithm.o: src/GeneticAlgorithm.cpp.o
-.PHONY : src/GeneticAlgorithm.o
+src/GPUKernels.o: src/GPUKernels.cu.o
+.PHONY : src/GPUKernels.o
 
 # target to build an object file
-src/GeneticAlgorithm.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bismillah.dir/build.make CMakeFiles/bismillah.dir/src/GeneticAlgorithm.cpp.o
-.PHONY : src/GeneticAlgorithm.cpp.o
+src/GPUKernels.cu.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bismillah.dir/build.make CMakeFiles/bismillah.dir/src/GPUKernels.cu.o
+.PHONY : src/GPUKernels.cu.o
 
-src/GeneticAlgorithm.i: src/GeneticAlgorithm.cpp.i
-.PHONY : src/GeneticAlgorithm.i
-
-# target to preprocess a source file
-src/GeneticAlgorithm.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bismillah.dir/build.make CMakeFiles/bismillah.dir/src/GeneticAlgorithm.cpp.i
-.PHONY : src/GeneticAlgorithm.cpp.i
-
-src/GeneticAlgorithm.s: src/GeneticAlgorithm.cpp.s
-.PHONY : src/GeneticAlgorithm.s
-
-# target to generate assembly for a file
-src/GeneticAlgorithm.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bismillah.dir/build.make CMakeFiles/bismillah.dir/src/GeneticAlgorithm.cpp.s
-.PHONY : src/GeneticAlgorithm.cpp.s
-
-src/GlobalInversionMethods.o: src/GlobalInversionMethods.cpp.o
-.PHONY : src/GlobalInversionMethods.o
-
-# target to build an object file
-src/GlobalInversionMethods.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bismillah.dir/build.make CMakeFiles/bismillah.dir/src/GlobalInversionMethods.cpp.o
-.PHONY : src/GlobalInversionMethods.cpp.o
-
-src/GlobalInversionMethods.i: src/GlobalInversionMethods.cpp.i
-.PHONY : src/GlobalInversionMethods.i
+src/GPUKernels.i: src/GPUKernels.cu.i
+.PHONY : src/GPUKernels.i
 
 # target to preprocess a source file
-src/GlobalInversionMethods.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bismillah.dir/build.make CMakeFiles/bismillah.dir/src/GlobalInversionMethods.cpp.i
-.PHONY : src/GlobalInversionMethods.cpp.i
+src/GPUKernels.cu.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bismillah.dir/build.make CMakeFiles/bismillah.dir/src/GPUKernels.cu.i
+.PHONY : src/GPUKernels.cu.i
 
-src/GlobalInversionMethods.s: src/GlobalInversionMethods.cpp.s
-.PHONY : src/GlobalInversionMethods.s
-
-# target to generate assembly for a file
-src/GlobalInversionMethods.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bismillah.dir/build.make CMakeFiles/bismillah.dir/src/GlobalInversionMethods.cpp.s
-.PHONY : src/GlobalInversionMethods.cpp.s
-
-src/LocalInversionMethods.o: src/LocalInversionMethods.cpp.o
-.PHONY : src/LocalInversionMethods.o
-
-# target to build an object file
-src/LocalInversionMethods.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bismillah.dir/build.make CMakeFiles/bismillah.dir/src/LocalInversionMethods.cpp.o
-.PHONY : src/LocalInversionMethods.cpp.o
-
-src/LocalInversionMethods.i: src/LocalInversionMethods.cpp.i
-.PHONY : src/LocalInversionMethods.i
-
-# target to preprocess a source file
-src/LocalInversionMethods.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bismillah.dir/build.make CMakeFiles/bismillah.dir/src/LocalInversionMethods.cpp.i
-.PHONY : src/LocalInversionMethods.cpp.i
-
-src/LocalInversionMethods.s: src/LocalInversionMethods.cpp.s
-.PHONY : src/LocalInversionMethods.s
+src/GPUKernels.s: src/GPUKernels.cu.s
+.PHONY : src/GPUKernels.s
 
 # target to generate assembly for a file
-src/LocalInversionMethods.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/bismillah.dir/build.make CMakeFiles/bismillah.dir/src/LocalInversionMethods.cpp.s
-.PHONY : src/LocalInversionMethods.cpp.s
+src/GPUKernels.cu.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/bismillah.dir/build.make CMakeFiles/bismillah.dir/src/GPUKernels.cu.s
+.PHONY : src/GPUKernels.cu.s
 
 src/MainWindow.o: src/MainWindow.cpp.o
 .PHONY : src/MainWindow.o
@@ -554,198 +443,6 @@ src/VelocityModelWidget.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/bismillah.dir/build.make CMakeFiles/bismillah.dir/src/VelocityModelWidget.cpp.s
 .PHONY : src/VelocityModelWidget.cpp.s
 
-src/cuda/CUDAUtils.o: src/cuda/CUDAUtils.cu.o
-.PHONY : src/cuda/CUDAUtils.o
-
-# target to build an object file
-src/cuda/CUDAUtils.cu.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/inversion_cuda.dir/build.make CMakeFiles/inversion_cuda.dir/src/cuda/CUDAUtils.cu.o
-.PHONY : src/cuda/CUDAUtils.cu.o
-
-src/cuda/CUDAUtils.i: src/cuda/CUDAUtils.cu.i
-.PHONY : src/cuda/CUDAUtils.i
-
-# target to preprocess a source file
-src/cuda/CUDAUtils.cu.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/inversion_cuda.dir/build.make CMakeFiles/inversion_cuda.dir/src/cuda/CUDAUtils.cu.i
-.PHONY : src/cuda/CUDAUtils.cu.i
-
-src/cuda/CUDAUtils.s: src/cuda/CUDAUtils.cu.s
-.PHONY : src/cuda/CUDAUtils.s
-
-# target to generate assembly for a file
-src/cuda/CUDAUtils.cu.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/inversion_cuda.dir/build.make CMakeFiles/inversion_cuda.dir/src/cuda/CUDAUtils.cu.s
-.PHONY : src/cuda/CUDAUtils.cu.s
-
-src/cuda/CauchySAKernel.o: src/cuda/CauchySAKernel.cu.o
-.PHONY : src/cuda/CauchySAKernel.o
-
-# target to build an object file
-src/cuda/CauchySAKernel.cu.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/inversion_cuda.dir/build.make CMakeFiles/inversion_cuda.dir/src/cuda/CauchySAKernel.cu.o
-.PHONY : src/cuda/CauchySAKernel.cu.o
-
-src/cuda/CauchySAKernel.i: src/cuda/CauchySAKernel.cu.i
-.PHONY : src/cuda/CauchySAKernel.i
-
-# target to preprocess a source file
-src/cuda/CauchySAKernel.cu.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/inversion_cuda.dir/build.make CMakeFiles/inversion_cuda.dir/src/cuda/CauchySAKernel.cu.i
-.PHONY : src/cuda/CauchySAKernel.cu.i
-
-src/cuda/CauchySAKernel.s: src/cuda/CauchySAKernel.cu.s
-.PHONY : src/cuda/CauchySAKernel.s
-
-# target to generate assembly for a file
-src/cuda/CauchySAKernel.cu.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/inversion_cuda.dir/build.make CMakeFiles/inversion_cuda.dir/src/cuda/CauchySAKernel.cu.s
-.PHONY : src/cuda/CauchySAKernel.cu.s
-
-src/cuda/GridSearchKernel.o: src/cuda/GridSearchKernel.cu.o
-.PHONY : src/cuda/GridSearchKernel.o
-
-# target to build an object file
-src/cuda/GridSearchKernel.cu.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/inversion_cuda.dir/build.make CMakeFiles/inversion_cuda.dir/src/cuda/GridSearchKernel.cu.o
-.PHONY : src/cuda/GridSearchKernel.cu.o
-
-src/cuda/GridSearchKernel.i: src/cuda/GridSearchKernel.cu.i
-.PHONY : src/cuda/GridSearchKernel.i
-
-# target to preprocess a source file
-src/cuda/GridSearchKernel.cu.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/inversion_cuda.dir/build.make CMakeFiles/inversion_cuda.dir/src/cuda/GridSearchKernel.cu.i
-.PHONY : src/cuda/GridSearchKernel.cu.i
-
-src/cuda/GridSearchKernel.s: src/cuda/GridSearchKernel.cu.s
-.PHONY : src/cuda/GridSearchKernel.s
-
-# target to generate assembly for a file
-src/cuda/GridSearchKernel.cu.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/inversion_cuda.dir/build.make CMakeFiles/inversion_cuda.dir/src/cuda/GridSearchKernel.cu.s
-.PHONY : src/cuda/GridSearchKernel.cu.s
-
-src/cuda/MetropolisSAKernel.o: src/cuda/MetropolisSAKernel.cu.o
-.PHONY : src/cuda/MetropolisSAKernel.o
-
-# target to build an object file
-src/cuda/MetropolisSAKernel.cu.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/inversion_cuda.dir/build.make CMakeFiles/inversion_cuda.dir/src/cuda/MetropolisSAKernel.cu.o
-.PHONY : src/cuda/MetropolisSAKernel.cu.o
-
-src/cuda/MetropolisSAKernel.i: src/cuda/MetropolisSAKernel.cu.i
-.PHONY : src/cuda/MetropolisSAKernel.i
-
-# target to preprocess a source file
-src/cuda/MetropolisSAKernel.cu.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/inversion_cuda.dir/build.make CMakeFiles/inversion_cuda.dir/src/cuda/MetropolisSAKernel.cu.i
-.PHONY : src/cuda/MetropolisSAKernel.cu.i
-
-src/cuda/MetropolisSAKernel.s: src/cuda/MetropolisSAKernel.cu.s
-.PHONY : src/cuda/MetropolisSAKernel.s
-
-# target to generate assembly for a file
-src/cuda/MetropolisSAKernel.cu.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/inversion_cuda.dir/build.make CMakeFiles/inversion_cuda.dir/src/cuda/MetropolisSAKernel.cu.s
-.PHONY : src/cuda/MetropolisSAKernel.cu.s
-
-src/cuda/SPEA2Kernel.o: src/cuda/SPEA2Kernel.cu.o
-.PHONY : src/cuda/SPEA2Kernel.o
-
-# target to build an object file
-src/cuda/SPEA2Kernel.cu.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/inversion_cuda.dir/build.make CMakeFiles/inversion_cuda.dir/src/cuda/SPEA2Kernel.cu.o
-.PHONY : src/cuda/SPEA2Kernel.cu.o
-
-src/cuda/SPEA2Kernel.i: src/cuda/SPEA2Kernel.cu.i
-.PHONY : src/cuda/SPEA2Kernel.i
-
-# target to preprocess a source file
-src/cuda/SPEA2Kernel.cu.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/inversion_cuda.dir/build.make CMakeFiles/inversion_cuda.dir/src/cuda/SPEA2Kernel.cu.i
-.PHONY : src/cuda/SPEA2Kernel.cu.i
-
-src/cuda/SPEA2Kernel.s: src/cuda/SPEA2Kernel.cu.s
-.PHONY : src/cuda/SPEA2Kernel.s
-
-# target to generate assembly for a file
-src/cuda/SPEA2Kernel.cu.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/inversion_cuda.dir/build.make CMakeFiles/inversion_cuda.dir/src/cuda/SPEA2Kernel.cu.s
-.PHONY : src/cuda/SPEA2Kernel.cu.s
-
-src/cuda/SimpleSAKernel.o: src/cuda/SimpleSAKernel.cu.o
-.PHONY : src/cuda/SimpleSAKernel.o
-
-# target to build an object file
-src/cuda/SimpleSAKernel.cu.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/inversion_cuda.dir/build.make CMakeFiles/inversion_cuda.dir/src/cuda/SimpleSAKernel.cu.o
-.PHONY : src/cuda/SimpleSAKernel.cu.o
-
-src/cuda/SimpleSAKernel.i: src/cuda/SimpleSAKernel.cu.i
-.PHONY : src/cuda/SimpleSAKernel.i
-
-# target to preprocess a source file
-src/cuda/SimpleSAKernel.cu.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/inversion_cuda.dir/build.make CMakeFiles/inversion_cuda.dir/src/cuda/SimpleSAKernel.cu.i
-.PHONY : src/cuda/SimpleSAKernel.cu.i
-
-src/cuda/SimpleSAKernel.s: src/cuda/SimpleSAKernel.cu.s
-.PHONY : src/cuda/SimpleSAKernel.s
-
-# target to generate assembly for a file
-src/cuda/SimpleSAKernel.cu.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/inversion_cuda.dir/build.make CMakeFiles/inversion_cuda.dir/src/cuda/SimpleSAKernel.cu.s
-.PHONY : src/cuda/SimpleSAKernel.cu.s
-
-src/cuda/StandardGAKernel.o: src/cuda/StandardGAKernel.cu.o
-.PHONY : src/cuda/StandardGAKernel.o
-
-# target to build an object file
-src/cuda/StandardGAKernel.cu.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/inversion_cuda.dir/build.make CMakeFiles/inversion_cuda.dir/src/cuda/StandardGAKernel.cu.o
-.PHONY : src/cuda/StandardGAKernel.cu.o
-
-src/cuda/StandardGAKernel.i: src/cuda/StandardGAKernel.cu.i
-.PHONY : src/cuda/StandardGAKernel.i
-
-# target to preprocess a source file
-src/cuda/StandardGAKernel.cu.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/inversion_cuda.dir/build.make CMakeFiles/inversion_cuda.dir/src/cuda/StandardGAKernel.cu.i
-.PHONY : src/cuda/StandardGAKernel.cu.i
-
-src/cuda/StandardGAKernel.s: src/cuda/StandardGAKernel.cu.s
-.PHONY : src/cuda/StandardGAKernel.s
-
-# target to generate assembly for a file
-src/cuda/StandardGAKernel.cu.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/inversion_cuda.dir/build.make CMakeFiles/inversion_cuda.dir/src/cuda/StandardGAKernel.cu.s
-.PHONY : src/cuda/StandardGAKernel.cu.s
-
-src/cuda/SteadyStateGAKernel.o: src/cuda/SteadyStateGAKernel.cu.o
-.PHONY : src/cuda/SteadyStateGAKernel.o
-
-# target to build an object file
-src/cuda/SteadyStateGAKernel.cu.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/inversion_cuda.dir/build.make CMakeFiles/inversion_cuda.dir/src/cuda/SteadyStateGAKernel.cu.o
-.PHONY : src/cuda/SteadyStateGAKernel.cu.o
-
-src/cuda/SteadyStateGAKernel.i: src/cuda/SteadyStateGAKernel.cu.i
-.PHONY : src/cuda/SteadyStateGAKernel.i
-
-# target to preprocess a source file
-src/cuda/SteadyStateGAKernel.cu.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/inversion_cuda.dir/build.make CMakeFiles/inversion_cuda.dir/src/cuda/SteadyStateGAKernel.cu.i
-.PHONY : src/cuda/SteadyStateGAKernel.cu.i
-
-src/cuda/SteadyStateGAKernel.s: src/cuda/SteadyStateGAKernel.cu.s
-.PHONY : src/cuda/SteadyStateGAKernel.s
-
-# target to generate assembly for a file
-src/cuda/SteadyStateGAKernel.cu.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/inversion_cuda.dir/build.make CMakeFiles/inversion_cuda.dir/src/cuda/SteadyStateGAKernel.cu.s
-.PHONY : src/cuda/SteadyStateGAKernel.cu.s
-
 src/main.o: src/main.cpp.o
 .PHONY : src/main.o
 
@@ -780,37 +477,25 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... bismillah_autogen"
 	@echo "... bismillah_autogen_timestamp_deps"
-	@echo "... inversion_cuda_autogen"
-	@echo "... inversion_cuda_autogen_timestamp_deps"
 	@echo "... bismillah"
-	@echo "... inversion_cuda"
 	@echo "... bismillah_autogen/EWIEGA46WW/qrc_app.o"
 	@echo "... bismillah_autogen/EWIEGA46WW/qrc_app.i"
 	@echo "... bismillah_autogen/EWIEGA46WW/qrc_app.s"
 	@echo "... bismillah_autogen/mocs_compilation.o"
 	@echo "... bismillah_autogen/mocs_compilation.i"
 	@echo "... bismillah_autogen/mocs_compilation.s"
-	@echo "... inversion_cuda_autogen/mocs_compilation.o"
-	@echo "... inversion_cuda_autogen/mocs_compilation.i"
-	@echo "... inversion_cuda_autogen/mocs_compilation.s"
-	@echo "... src/CUDAInversionWrapper.o"
-	@echo "... src/CUDAInversionWrapper.i"
-	@echo "... src/CUDAInversionWrapper.s"
 	@echo "... src/CalculatingConditionWidget.o"
 	@echo "... src/CalculatingConditionWidget.i"
 	@echo "... src/CalculatingConditionWidget.s"
+	@echo "... src/ComputationEngine.o"
+	@echo "... src/ComputationEngine.i"
+	@echo "... src/ComputationEngine.s"
 	@echo "... src/DataInputWidget.o"
 	@echo "... src/DataInputWidget.i"
 	@echo "... src/DataInputWidget.s"
-	@echo "... src/GeneticAlgorithm.o"
-	@echo "... src/GeneticAlgorithm.i"
-	@echo "... src/GeneticAlgorithm.s"
-	@echo "... src/GlobalInversionMethods.o"
-	@echo "... src/GlobalInversionMethods.i"
-	@echo "... src/GlobalInversionMethods.s"
-	@echo "... src/LocalInversionMethods.o"
-	@echo "... src/LocalInversionMethods.i"
-	@echo "... src/LocalInversionMethods.s"
+	@echo "... src/GPUKernels.o"
+	@echo "... src/GPUKernels.i"
+	@echo "... src/GPUKernels.s"
 	@echo "... src/MainWindow.o"
 	@echo "... src/MainWindow.i"
 	@echo "... src/MainWindow.s"
@@ -829,30 +514,6 @@ help:
 	@echo "... src/VelocityModelWidget.o"
 	@echo "... src/VelocityModelWidget.i"
 	@echo "... src/VelocityModelWidget.s"
-	@echo "... src/cuda/CUDAUtils.o"
-	@echo "... src/cuda/CUDAUtils.i"
-	@echo "... src/cuda/CUDAUtils.s"
-	@echo "... src/cuda/CauchySAKernel.o"
-	@echo "... src/cuda/CauchySAKernel.i"
-	@echo "... src/cuda/CauchySAKernel.s"
-	@echo "... src/cuda/GridSearchKernel.o"
-	@echo "... src/cuda/GridSearchKernel.i"
-	@echo "... src/cuda/GridSearchKernel.s"
-	@echo "... src/cuda/MetropolisSAKernel.o"
-	@echo "... src/cuda/MetropolisSAKernel.i"
-	@echo "... src/cuda/MetropolisSAKernel.s"
-	@echo "... src/cuda/SPEA2Kernel.o"
-	@echo "... src/cuda/SPEA2Kernel.i"
-	@echo "... src/cuda/SPEA2Kernel.s"
-	@echo "... src/cuda/SimpleSAKernel.o"
-	@echo "... src/cuda/SimpleSAKernel.i"
-	@echo "... src/cuda/SimpleSAKernel.s"
-	@echo "... src/cuda/StandardGAKernel.o"
-	@echo "... src/cuda/StandardGAKernel.i"
-	@echo "... src/cuda/StandardGAKernel.s"
-	@echo "... src/cuda/SteadyStateGAKernel.o"
-	@echo "... src/cuda/SteadyStateGAKernel.i"
-	@echo "... src/cuda/SteadyStateGAKernel.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"

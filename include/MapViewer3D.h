@@ -3,7 +3,7 @@
 
 #include <QWidget>
 #include <QVector>
-#include "MapViewer2D.h"
+#include "SharedTypes.h"
 
 class MapViewer3D : public QWidget {
     Q_OBJECT

@@ -6,18 +6,15 @@ file(REMOVE_RECURSE
   "CMakeFiles/bismillah.dir/bismillah_autogen/EWIEGA46WW/qrc_app.cpp.o.d"
   "CMakeFiles/bismillah.dir/bismillah_autogen/mocs_compilation.cpp.o"
   "CMakeFiles/bismillah.dir/bismillah_autogen/mocs_compilation.cpp.o.d"
-  "CMakeFiles/bismillah.dir/src/CUDAInversionWrapper.cpp.o"
-  "CMakeFiles/bismillah.dir/src/CUDAInversionWrapper.cpp.o.d"
+  "CMakeFiles/bismillah.dir/cmake_device_link.o"
   "CMakeFiles/bismillah.dir/src/CalculatingConditionWidget.cpp.o"
   "CMakeFiles/bismillah.dir/src/CalculatingConditionWidget.cpp.o.d"
+  "CMakeFiles/bismillah.dir/src/ComputationEngine.cpp.o"
+  "CMakeFiles/bismillah.dir/src/ComputationEngine.cpp.o.d"
   "CMakeFiles/bismillah.dir/src/DataInputWidget.cpp.o"
   "CMakeFiles/bismillah.dir/src/DataInputWidget.cpp.o.d"
-  "CMakeFiles/bismillah.dir/src/GeneticAlgorithm.cpp.o"
-  "CMakeFiles/bismillah.dir/src/GeneticAlgorithm.cpp.o.d"
-  "CMakeFiles/bismillah.dir/src/GlobalInversionMethods.cpp.o"
-  "CMakeFiles/bismillah.dir/src/GlobalInversionMethods.cpp.o.d"
-  "CMakeFiles/bismillah.dir/src/LocalInversionMethods.cpp.o"
-  "CMakeFiles/bismillah.dir/src/LocalInversionMethods.cpp.o.d"
+  "CMakeFiles/bismillah.dir/src/GPUKernels.cu.o"
+  "CMakeFiles/bismillah.dir/src/GPUKernels.cu.o.d"
   "CMakeFiles/bismillah.dir/src/MainWindow.cpp.o"
   "CMakeFiles/bismillah.dir/src/MainWindow.cpp.o.d"
   "CMakeFiles/bismillah.dir/src/MapViewer2D.cpp.o"
@@ -38,6 +35,6 @@ file(REMOVE_RECURSE
 )
 
 # Per-language clean rules from dependency scanning.
-foreach(lang CXX)
+foreach(lang CUDA CXX)
   include(CMakeFiles/bismillah.dir/cmake_clean_${lang}.cmake OPTIONAL)
 endforeach()

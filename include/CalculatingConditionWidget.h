@@ -5,7 +5,7 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QScrollArea>
-#include "MapViewer2D.h"
+#include "SharedTypes.h"
 
 class CalculatingConditionWidget : public QWidget {
     Q_OBJECT

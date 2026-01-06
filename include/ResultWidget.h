@@ -5,6 +5,7 @@
 #include <QTextEdit>
 #include <QPushButton>
 #include <QVector>
+#include "SharedTypes.h"
 
 class MisfitPlot : public QWidget {
     Q_OBJECT
@@ -28,7 +29,7 @@ class Result2DPlot : public QWidget {
     
 public:
     explicit Result2DPlot(QWidget *parent = nullptr);
-    void setResult(double x, double y, const QVector<QPointF> &contour);
+    void setResult(double x, double y, const QVector<QPointF> &contour, const QVector<StationData> &stations = QVector<StationData>());
     void clearData();
     
 protected:
@@ -37,7 +38,10 @@ protected:
 private:
     double resultX, resultY;
     QVector<QPointF> contourData;
+    QVector<StationData> stationData;
     bool hasData;
+    
+    QColor getColorViridis(double t) const;  // Colormap function
 };
 
 class Result3DPlot : public QWidget {
@@ -45,7 +49,7 @@ class Result3DPlot : public QWidget {
     
 public:
     explicit Result3DPlot(QWidget *parent = nullptr);
-    void setResult(double x, double y, double z);
+    void setResult(double x, double y, double z, const QVector<QPointF> &contour = QVector<QPointF>(), const QVector<StationData> &stations = QVector<StationData>());
     void clearData();
     
 protected:
@@ -57,6 +61,8 @@ protected:
     
 private:
     double resultX, resultY, resultZ;
+    QVector<QPointF> contourData;
+    QVector<StationData> stationData;
     bool hasData;
     
     double rotationX;
@@ -66,6 +72,7 @@ private:
     QPoint lastMousePos;
     
     QPointF project3D(double x, double y, double z) const;
+    QColor getColorRedWhiteBlue(double t) const;  // Red-White-Blue colormap
 };
 
 class ResultWidget : public QWidget {
@@ -78,8 +85,8 @@ public:
     void appendResult(const QString &text);
     void clearResults();
     void setMisfitData(const QVector<double> &iterations, const QVector<double> &misfits);
-    void set2DResult(double x, double y, const QVector<QPointF> &contour);
-    void set3DResult(double x, double y, double z);
+    void set2DResult(double x, double y, const QVector<QPointF> &contour, const QVector<StationData> &stations = QVector<StationData>());
+    void set3DResult(double x, double y, double z, const QVector<QPointF> &contour = QVector<QPointF>(), const QVector<StationData> &stations = QVector<StationData>());
 
 private:
     void setupUI();

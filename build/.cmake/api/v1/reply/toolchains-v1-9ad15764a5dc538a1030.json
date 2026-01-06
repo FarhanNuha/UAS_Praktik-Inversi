@@ -1,0 +1,127 @@
+{
+	"kind" : "toolchains",
+	"toolchains" : 
+	[
+		{
+			"compiler" : 
+			{
+				"id" : "NVIDIA",
+				"implicit" : 
+				{
+					"includeDirectories" : 
+					[
+						"/home/farhan/hpc_sdk/Linux_x86_64/24.7/cuda/12.5/include",
+						"/home/farhan/hpc_sdk/Linux_x86_64/24.7/math_libs/12.5/include",
+						"/home/farhan/hpc_sdk/Linux_x86_64/24.7/comm_libs/12.5/nccl/include",
+						"/home/farhan/hpc_sdk/Linux_x86_64/24.7/comm_libs/12.5/nvshmem/include",
+						"/usr/include/c++/13",
+						"/usr/include/x86_64-linux-gnu/c++/13",
+						"/usr/include/c++/13/backward",
+						"/usr/lib/gcc/x86_64-linux-gnu/13/include",
+						"/usr/local/include",
+						"/usr/include/x86_64-linux-gnu",
+						"/usr/include"
+					],
+					"linkDirectories" : 
+					[
+						"/home/farhan/netcdf4/lib",
+						"/home/farhan/hpc_sdk/Linux_x86_64/24.7/cuda/12.5/lib64",
+						"/home/farhan/hpc_sdk/Linux_x86_64/24.7/math_libs/12.5/lib64",
+						"/home/farhan/hpc_sdk/Linux_x86_64/24.7/comm_libs/12.5/nccl/lib",
+						"/home/farhan/hpc_sdk/Linux_x86_64/24.7/comm_libs/12.5/nvshmem/lib",
+						"/home/farhan/hpc_sdk/Linux_x86_64/24.7/cuda/12.5/targets/x86_64-linux/lib/stubs",
+						"/home/farhan/hpc_sdk/Linux_x86_64/24.7/cuda/12.5/targets/x86_64-linux/lib",
+						"/usr/lib/gcc/x86_64-linux-gnu/13",
+						"/usr/lib/x86_64-linux-gnu",
+						"/usr/lib",
+						"/lib/x86_64-linux-gnu",
+						"/lib"
+					],
+					"linkFrameworkDirectories" : [],
+					"linkLibraries" : 
+					[
+						"stdc++",
+						"m",
+						"gcc_s",
+						"gcc",
+						"c",
+						"gcc_s",
+						"gcc"
+					]
+				},
+				"path" : "/home/farhan/hpc_sdk/Linux_x86_64/24.7/compilers/bin/nvcc",
+				"version" : "12.5.82"
+			},
+			"language" : "CUDA",
+			"sourceFileExtensions" : 
+			[
+				"cu"
+			]
+		},
+		{
+			"compiler" : 
+			{
+				"id" : "NVHPC",
+				"implicit" : 
+				{
+					"includeDirectories" : 
+					[
+						"/usr/include"
+					],
+					"linkDirectories" : 
+					[
+						"/home/farhan/netcdf4/lib",
+						"/home/farhan/hpc_sdk/Linux_x86_64/24.7/compilers/lib",
+						"/usr/lib64",
+						"/usr/lib/gcc/x86_64-linux-gnu/13"
+					],
+					"linkFrameworkDirectories" : [],
+					"linkLibraries" : 
+					[
+						"atomic",
+						"nvhpcatm",
+						"stdc++",
+						"nvomp",
+						"dl",
+						"nvhpcatm",
+						"atomic",
+						"pthread",
+						"nvcpumath",
+						"nsnvc",
+						"nvc",
+						"gcc",
+						"c",
+						"gcc_s",
+						"m"
+					]
+				},
+				"path" : "/home/farhan/hpc_sdk/Linux_x86_64/24.7/compilers/bin/nvc++",
+				"version" : "24.7.0"
+			},
+			"language" : "CXX",
+			"sourceFileExtensions" : 
+			[
+				"C",
+				"M",
+				"c++",
+				"cc",
+				"cpp",
+				"cxx",
+				"m",
+				"mm",
+				"mpp",
+				"CPP",
+				"ixx",
+				"cppm",
+				"ccm",
+				"cxxm",
+				"c++m"
+			]
+		}
+	],
+	"version" : 
+	{
+		"major" : 1,
+		"minor" : 0
+	}
+}

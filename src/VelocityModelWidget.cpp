@@ -14,11 +14,8 @@
 #include <QWheelEvent>
 #include <QMouseEvent>
 #include <QSplitter>
+#include <QPushButton>
 #include <cmath>
-
-// ============================================================================
-// Velocity1DPlot Implementation
-// ============================================================================
 
 Velocity1DPlot::Velocity1DPlot(QWidget *parent)
     : QWidget(parent), hasData(false)
@@ -504,6 +501,22 @@ void VelocityModelWidget::setupUI() {
     modelStack->addWidget(model3DWidget);
     
     mainLayout->addWidget(modelStack);
+
+    // Bottom select button ("Pilih") to commit the chosen velocity model
+    QHBoxLayout *bottomLayout = new QHBoxLayout();
+    bottomLayout->addStretch();
+    selectButton = new QPushButton("Pilih", this);
+    selectButton->setMinimumHeight(40);
+    selectButton->setMaximumWidth(120);
+    selectButton->setStyleSheet(
+        "QPushButton { background-color: #4CAF50; color: white; font-weight: bold; border-radius: 5px; padding: 5px; }"
+        "QPushButton:hover { background-color: #45a049; }"
+        "QPushButton:pressed { background-color: #3d8b40; }"
+    );
+    bottomLayout->addWidget(selectButton);
+    bottomLayout->addStretch();
+    mainLayout->addLayout(bottomLayout);
+    connect(selectButton, &QPushButton::clicked, this, &VelocityModelWidget::onSelectClicked);
 }
 
 void VelocityModelWidget::onModelTypeChanged(int index) {
@@ -517,6 +530,7 @@ void VelocityModelWidget::onModelTypeChanged(int index) {
     velocity3DPlot->clearData();
     
     modelStack->setCurrentIndex(index);
+    emit modelChanged(getModelType());
 }
 
 void VelocityModelWidget::onLoad1DModel() {
@@ -579,6 +593,8 @@ void VelocityModelWidget::onLoad1DModel() {
     QMessageBox::information(this, "Success", 
         QString("1D model loaded successfully!\nFile: %1\nLayers: %2")
             .arg(fileName).arg(model1DData.size()));
+    
+    emit modelChanged(getModelType());
 }
 
 void VelocityModelWidget::onLoad3DModel() {
@@ -687,6 +703,7 @@ void VelocityModelWidget::onLoad3DModel() {
                    "Set boundary di 'Calculating Condition' untuk validasi grid.")
                 .arg(fileName).arg(model3DData.size()));
     }
+    emit modelChanged(getModelType());
 }
 
 void VelocityModelWidget::setBoundary(const BoundaryData &boundary) {
@@ -743,4 +760,15 @@ QVector<VelocityLayer1D> VelocityModelWidget::get1DModelData() const {
 
 QVector<VelocityPoint3D> VelocityModelWidget::get3DModelData() const {
     return model3DData;
+}
+
+void VelocityModelWidget::onSelectClicked() {
+    QString modelType = getModelType();
+
+    emit modelCommitted(modelType);
+
+    QMessageBox::information(this, "Velocity Model Selected",
+                             QString("Model kecepatan dipilih: %1").arg(modelType));
+
+    selectButton->setEnabled(false);
 }

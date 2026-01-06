@@ -26,8 +26,9 @@ MisfitPlot::MisfitPlot(QWidget *parent)
 void MisfitPlot::setData(const QVector<double> &iterations, const QVector<double> &misfits) {
     iterData = iterations;
     misfitData = misfits;
-    hasData = !iterations.isEmpty();
+    hasData = !iterations.isEmpty() && !misfits.isEmpty();
     update();
+    repaint();
 }
 
 void MisfitPlot::clearData() {
@@ -108,6 +109,15 @@ void MisfitPlot::paintEvent(QPaintEvent *event) {
         painter.setPen(QPen(QColor(220, 220, 220), 1, Qt::DotLine));
     }
     
+    // Draw iteration labels on X-axis
+    painter.setPen(Qt::black);
+    for (int i = 0; i <= 5 && i < iterData.size(); ++i) {
+        int idx = (iterData.size() - 1) * i / 5;
+        double x = leftMargin + (iterData[idx] - minIter) / (maxIter - minIter) * plotWidth;
+        painter.drawText(QRect(x - 20, height() - bottomMargin + 5, 40, 15), Qt::AlignCenter, 
+                        QString::number(static_cast<int>(iterData[idx])));
+    }
+    
     // Draw line plot
     painter.setPen(QPen(QColor(0, 120, 215), 2));
     for (int i = 0; i < iterData.size() - 1; ++i) {
@@ -131,12 +141,14 @@ Result2DPlot::Result2DPlot(QWidget *parent)
     setMinimumSize(300, 200);
 }
 
-void Result2DPlot::setResult(double x, double y, const QVector<QPointF> &contour) {
+void Result2DPlot::setResult(double x, double y, const QVector<QPointF> &contour, const QVector<StationData> &stations) {
     resultX = x;
     resultY = y;
     contourData = contour;
+    stationData = stations;
     hasData = true;
     update();
+    repaint();
 }
 
 void Result2DPlot::clearData() {
@@ -165,31 +177,178 @@ void Result2DPlot::paintEvent(QPaintEvent *event) {
     titleFont.setBold(true);
     titleFont.setPointSize(10);
     painter.setFont(titleFont);
-    painter.drawText(QRect(0, 5, width(), 20), Qt::AlignCenter, "Result 2D - XY Plane");
+    painter.drawText(QRect(0, 5, width(), 20), Qt::AlignCenter, "Result 2D - XY Plane with Misfit Contour");
     
-    int centerX = width() / 2;
-    int centerY = height() / 2;
-    int scale = 100;
+    int leftMargin = 50;
+    int rightMargin = 60;
+    int topMargin = 30;
+    int bottomMargin = 40;
     
-    // Draw axes
-    painter.setPen(QPen(Qt::black, 2));
-    painter.drawLine(centerX - scale, centerY, centerX + scale, centerY);
-    painter.drawLine(centerX, centerY - scale, centerX, centerY + scale);
+    int plotWidth = width() - leftMargin - rightMargin;
+    int plotHeight = height() - topMargin - bottomMargin;
     
-    // Draw contour (placeholder)
-    painter.setPen(QPen(QColor(100, 100, 255), 1));
-    for (int i = 1; i <= 5; ++i) {
-        int radius = i * 15;
-        painter.drawEllipse(QPointF(centerX, centerY), radius, radius);
+    // Find bounds from ALL available data: result, stations, and contour
+    double minX = resultX, maxX = resultX;
+    double minY = resultY, maxY = resultY;
+    
+    // Include all stations
+    for (const auto &sta : stationData) {
+        minX = std::min(minX, sta.longitude);
+        maxX = std::max(maxX, sta.longitude);
+        minY = std::min(minY, sta.latitude);
+        maxY = std::max(maxY, sta.latitude);
     }
     
-    // Draw result point
-    painter.setPen(QPen(Qt::red, 3));
-    painter.setBrush(Qt::red);
-    painter.drawEllipse(QPointF(centerX, centerY), 8, 8);
+    // Include all contour points
+    if (!contourData.isEmpty()) {
+        for (const auto &pt : contourData) {
+            minX = std::min(minX, pt.x());
+            maxX = std::max(maxX, pt.x());
+            minY = std::min(minY, pt.y());
+            maxY = std::max(maxY, pt.y());
+        }
+    }
     
-    painter.setPen(Qt::red);
-    painter.drawText(centerX + 15, centerY - 10, QString("Result: (%1, %2)").arg(resultX, 0, 'f', 2).arg(resultY, 0, 'f', 2));
+    // Add padding (10% on each side)
+    double xRange = maxX - minX;
+    double yRange = maxY - minY;
+    if (xRange < 0.1) xRange = 0.1;
+    if (yRange < 0.1) yRange = 0.1;
+    
+    double padding = 0.1;
+    minX -= xRange * padding;
+    maxX += xRange * padding;
+    minY -= yRange * padding;
+    maxY += yRange * padding;
+    
+    xRange = maxX - minX;
+    yRange = maxY - minY;
+    
+    // Draw axes
+    painter.setPen(QPen(Qt::black, 1));
+    painter.drawLine(leftMargin, topMargin, leftMargin, topMargin + plotHeight);
+    painter.drawLine(leftMargin, topMargin + plotHeight, leftMargin + plotWidth, topMargin + plotHeight);
+    
+    // Axis labels
+    QFont labelFont = painter.font();
+    labelFont.setPointSize(8);
+    painter.setFont(labelFont);
+    painter.drawText(leftMargin + plotWidth / 2 - 30, height() - 15, "Longitude (°)");
+    painter.drawText(5, topMargin + plotHeight / 2, "Latitude (°)");
+    
+    // Draw contour with viridis colormap
+    if (!contourData.isEmpty()) {
+        // Draw filled contour with gradient colors
+        for (int i = 0; i < contourData.size(); ++i) {
+            double t = static_cast<double>(i) / contourData.size();
+            QColor color = getColorViridis(t);
+            
+            painter.setPen(QPen(color, 2));
+            double x1 = leftMargin + (contourData[i].x() - minX) / xRange * plotWidth;
+            double y1 = topMargin + plotHeight - (contourData[i].y() - minY) / yRange * plotHeight;
+            
+            if (i > 0) {
+                double x0 = leftMargin + (contourData[i-1].x() - minX) / xRange * plotWidth;
+                double y0 = topMargin + plotHeight - (contourData[i-1].y() - minY) / yRange * plotHeight;
+                painter.drawLine(QPointF(x0, y0), QPointF(x1, y1));
+            }
+        }
+        
+        // Close contour
+        if (contourData.size() > 2) {
+            QColor lastColor = getColorViridis(1.0);
+            painter.setPen(QPen(lastColor, 2));
+            double x1 = leftMargin + (contourData.last().x() - minX) / xRange * plotWidth;
+            double y1 = topMargin + plotHeight - (contourData.last().y() - minY) / yRange * plotHeight;
+            double x2 = leftMargin + (contourData[0].x() - minX) / xRange * plotWidth;
+            double y2 = topMargin + plotHeight - (contourData[0].y() - minY) / yRange * plotHeight;
+            painter.drawLine(QPointF(x1, y1), QPointF(x2, y2));
+        }
+    }
+    
+    // Draw stations
+    painter.setPen(QPen(Qt::darkBlue, 1));
+    painter.setFont(QFont("Arial", 7));
+    for (const auto &sta : stationData) {
+        double stationX = leftMargin + (sta.longitude - minX) / xRange * plotWidth;
+        double stationY = topMargin + plotHeight - (sta.latitude - minY) / yRange * plotHeight;
+        
+        // Triangle marker
+        painter.setBrush(Qt::darkBlue);
+        QPolygonF triangle;
+        triangle << QPointF(stationX, stationY - 5)
+                 << QPointF(stationX - 4, stationY + 3)
+                 << QPointF(stationX + 4, stationY + 3);
+        painter.drawPolygon(triangle);
+        
+        // Station label
+        painter.drawText(stationX + 6, stationY - 2, sta.name);
+    }
+    
+    // Draw result point (epicenter)
+    double pointX = leftMargin + (resultX - minX) / xRange * plotWidth;
+    double pointY = topMargin + plotHeight - (resultY - minY) / yRange * plotHeight;
+    painter.setPen(QPen(Qt::red, 2));
+    painter.setBrush(Qt::red);
+    painter.drawEllipse(QPointF(pointX, pointY), 7, 7);
+    
+    painter.setPen(Qt::darkRed);
+    painter.drawText(pointX + 12, pointY - 8, "Epicenter");
+    painter.drawText(pointX + 12, pointY + 4, QString("(%1°, %2°)").arg(resultX, 0, 'f', 2).arg(resultY, 0, 'f', 2));
+    
+    // Draw colorbar legend
+    int barWidth = 15;
+    int barHeight = 100;
+    int barX = width() - 40;
+    int barY = topMargin + 20;
+    
+    for (int i = 0; i < barHeight; ++i) {
+        double t = 1.0 - (double)i / barHeight;
+        QColor color = getColorViridis(t);
+        painter.setPen(color);
+        painter.drawLine(barX, barY + i, barX + barWidth, barY + i);
+    }
+    
+    painter.setPen(Qt::black);
+    painter.drawRect(barX, barY, barWidth, barHeight);
+    painter.setFont(QFont("Arial", 7));
+    painter.drawText(barX - 20, barY - 5, "High");
+    painter.drawText(barX - 20, barY + barHeight + 5, "Low");
+    painter.drawText(barX - 40, barY + barHeight / 2 - 5, "Misfit");
+}
+
+QColor Result2DPlot::getColorViridis(double t) const {
+    // Viridis colormap: dark purple -> blue -> green -> yellow
+    t = std::max(0.0, std::min(1.0, t));
+    
+    int r, g, b;
+    if (t < 0.25) {
+        // Purple to Blue
+        double s = t / 0.25;
+        r = static_cast<int>(68 * (1 - s) + 33 * s);
+        g = static_cast<int>(1 * (1 - s) + 104 * s);
+        b = static_cast<int>(84 * (1 - s) + 183 * s);
+    } else if (t < 0.5) {
+        // Blue to Cyan-Green
+        double s = (t - 0.25) / 0.25;
+        r = static_cast<int>(33 * (1 - s) + 52 * s);
+        g = static_cast<int>(104 * (1 - s) + 151 * s);
+        b = static_cast<int>(183 * (1 - s) + 143 * s);
+    } else if (t < 0.75) {
+        // Cyan-Green to Green-Yellow
+        double s = (t - 0.5) / 0.25;
+        r = static_cast<int>(52 * (1 - s) + 130 * s);
+        g = static_cast<int>(151 * (1 - s) + 200 * s);
+        b = static_cast<int>(143 * (1 - s) + 72 * s);
+    } else {
+        // Green-Yellow to Yellow
+        double s = (t - 0.75) / 0.25;
+        r = static_cast<int>(130 * (1 - s) + 253 * s);
+        g = static_cast<int>(200 * (1 - s) + 231 * s);
+        b = static_cast<int>(72 * (1 - s) + 37 * s);
+    }
+    
+    return QColor(r, g, b);
 }
 
 // ============================================================================
@@ -204,12 +363,15 @@ Result3DPlot::Result3DPlot(QWidget *parent)
     setMouseTracking(true);
 }
 
-void Result3DPlot::setResult(double x, double y, double z) {
+void Result3DPlot::setResult(double x, double y, double z, const QVector<QPointF> &contour, const QVector<StationData> &stations) {
     resultX = x;
     resultY = y;
     resultZ = z;
+    contourData = contour;
+    stationData = stations;
     hasData = true;
     update();
+    repaint();
 }
 
 void Result3DPlot::clearData() {
@@ -235,34 +397,136 @@ void Result3DPlot::paintEvent(QPaintEvent *event) {
     titleFont.setBold(true);
     titleFont.setPointSize(10);
     painter.setFont(titleFont);
-    painter.drawText(QRect(0, 5, width(), 20), Qt::AlignCenter, "Result 3D");
+    painter.drawText(QRect(0, 5, width(), 20), Qt::AlignCenter, "Result 3D (XYZ) - Red-White-Blue Misfit");
     
     int centerX = width() / 2;
     int centerY = height() / 2 + 10;
     double scale = 80 * zoomFactor;
     
+    // Draw grid (reference frame)
+    painter.setPen(QPen(QColor(200, 200, 200), 1, Qt::DotLine));
+    for (double i = -1.0; i <= 1.0; i += 0.5) {
+        for (double j = -1.0; j <= 1.0; j += 0.5) {
+            QPointF p1 = project3D(i, j, 0);
+            QPointF p2 = project3D(i + 0.5, j, 0);
+            painter.drawLine(p1, p2);
+        }
+    }
+    
     // Draw 3D axes
     painter.setPen(QPen(Qt::red, 2));
-    painter.drawLine(project3D(0, 0, 0), project3D(1, 0, 0));
-    painter.drawText(project3D(1.2, 0, 0) + QPointF(5, 0), "X");
+    painter.drawLine(project3D(0, 0, 0), project3D(1.5, 0, 0));
+    QPointF xEnd = project3D(1.5, 0, 0);
+    painter.setPen(Qt::red);
+    painter.drawText(xEnd + QPointF(5, -5), "X");
     
     painter.setPen(QPen(Qt::green, 2));
-    painter.drawLine(project3D(0, 0, 0), project3D(0, 1, 0));
-    painter.drawText(project3D(0, 1.2, 0) + QPointF(5, 0), "Y");
+    painter.drawLine(project3D(0, 0, 0), project3D(0, 1.5, 0));
+    QPointF yEnd = project3D(0, 1.5, 0);
+    painter.setPen(Qt::green);
+    painter.drawText(yEnd + QPointF(5, -5), "Y");
     
     painter.setPen(QPen(Qt::blue, 2));
-    painter.drawLine(project3D(0, 0, 0), project3D(0, 0, 1));
-    painter.drawText(project3D(0, 0, 1.2) + QPointF(-15, 0), "Z");
+    painter.drawLine(project3D(0, 0, 0), project3D(0, 0, 1.5));
+    QPointF zEnd = project3D(0, 0, 1.5);
+    painter.setPen(Qt::blue);
+    painter.drawText(zEnd + QPointF(-15, -5), "Z");
     
-    // Draw result point
-    QPointF resultPos = project3D(resultX, resultY, resultZ);
+    // Draw contour points with red-white-blue colormap
+    if (!contourData.isEmpty()) {
+        double minMisfit = std::numeric_limits<double>::max();
+        double maxMisfit = std::numeric_limits<double>::lowest();
+        
+        // Find misfit range for normalization
+        for (const QPointF &pt : contourData) {
+            double misfit = pt.y();
+            minMisfit = std::min(minMisfit, misfit);
+            maxMisfit = std::max(maxMisfit, misfit);
+        }
+        
+        double misfitRange = maxMisfit - minMisfit;
+        if (misfitRange < 1e-10) misfitRange = 1.0;
+        
+        // Draw each contour point
+        for (const QPointF &pt : contourData) {
+            double normalizedMisfit = (pt.y() - minMisfit) / misfitRange;
+            normalizedMisfit = std::max(0.0, std::min(1.0, normalizedMisfit));
+            
+            QColor color = getColorRedWhiteBlue(normalizedMisfit);
+            painter.setPen(QPen(color, 1));
+            painter.setBrush(color);
+            
+            // Simple 2D projection - use x and misfit as y coordinate
+            double normX = (pt.x() - minMisfit) / misfitRange;
+            double normY = normalizedMisfit;
+            QPointF projPt = project3D(normX, normY, 0.1);
+            
+            painter.drawEllipse(projPt, 3, 3);
+        }
+    }
+    
+    // Draw station markers
+    for (const StationData &station : stationData) {
+        double normX = station.latitude / 10.0;
+        double normY = station.longitude / 10.0;
+        double normZ = 0.1; // Fixed elevation for visualization
+        
+        QPointF stationPos = project3D(normX, normY, normZ);
+        
+        // Draw triangle for station
+        QPolygonF triangle;
+        triangle << (stationPos + QPointF(-5, 5))
+                 << (stationPos + QPointF(5, 5))
+                 << (stationPos + QPointF(0, -5));
+        
+        painter.setPen(QPen(QColor(100, 150, 200), 1));
+        painter.setBrush(QColor(100, 150, 200));
+        painter.drawPolygon(triangle);
+        
+        // Draw station label
+        painter.setPen(Qt::darkBlue);
+        painter.setFont(QFont("Arial", 7));
+        painter.drawText(stationPos + QPointF(8, -5), station.name);
+    }
+    
+    // Draw result point (hypocenter)
+    double normX = resultX / 1000.0;
+    double normY = resultY / 1000.0;
+    double normZ = resultZ / 100.0;
+    
+    QPointF resultPos = project3D(normX, normY, normZ);
     painter.setPen(QPen(Qt::red, 3));
     painter.setBrush(Qt::red);
     painter.drawEllipse(resultPos, 8, 8);
     
     painter.setPen(Qt::darkRed);
-    painter.drawText(resultPos + QPointF(12, 0), QString("(%1, %2, %3)")
-        .arg(resultX, 0, 'f', 2).arg(resultY, 0, 'f', 2).arg(resultZ, 0, 'f', 2));
+    painter.setFont(QFont("Arial", 8));
+    painter.drawText(resultPos + QPointF(12, 0), QString("Hypocenter\n(%1°, %2°, %3 km)")
+        .arg(resultX, 0, 'f', 2).arg(resultY, 0, 'f', 2).arg(resultZ, 0, 'f', 1));
+    
+    // Draw colorbar legend
+    int cbX = width() - 30;
+    int cbY = 50;
+    int cbWidth = 20;
+    int cbHeight = 100;
+    
+    // Colorbar gradient
+    for (int i = 0; i < cbHeight; ++i) {
+        double t = 1.0 - (double)i / cbHeight; // Top = max, bottom = min
+        QColor color = getColorRedWhiteBlue(t);
+        painter.fillRect(cbX, cbY + i, cbWidth, 1, color);
+    }
+    
+    // Colorbar border
+    painter.setPen(Qt::black);
+    painter.drawRect(cbX, cbY, cbWidth, cbHeight);
+    painter.drawText(cbX - 40, cbY - 5, "Max Misfit");
+    painter.drawText(cbX - 40, cbY + cbHeight + 15, "Min Misfit");
+    
+    // Draw info
+    painter.setPen(Qt::darkGray);
+    painter.setFont(QFont("Arial", 7));
+    painter.drawText(10, height() - 10, "Drag: Rotate | Scroll: Zoom");
 }
 
 QPointF Result3DPlot::project3D(double x, double y, double z) const {
@@ -282,6 +546,29 @@ QPointF Result3DPlot::project3D(double x, double y, double z) const {
     double isoY = y2 * scale * 0.5 - z2 * scale;
     
     return QPointF(centerX + isoX, centerY + isoY);
+}
+
+QColor Result3DPlot::getColorRedWhiteBlue(double t) const {
+    t = std::max(0.0, std::min(1.0, t));
+    
+    // Red-White-Blue: Blue (t=0) -> White (t=0.5) -> Red (t=1)
+    int r, g, b;
+    
+    if (t < 0.5) {
+        // Blue to White transition
+        double s = t / 0.5; // 0 to 1
+        r = static_cast<int>(0 + s * 255);
+        g = static_cast<int>(0 + s * 255);
+        b = 255;
+    } else {
+        // White to Red transition
+        double s = (t - 0.5) / 0.5; // 0 to 1
+        r = 255;
+        g = static_cast<int>(255 * (1 - s));
+        b = static_cast<int>(255 * (1 - s));
+    }
+    
+    return QColor(r, g, b);
 }
 
 void Result3DPlot::wheelEvent(QWheelEvent *event) {
@@ -458,10 +745,10 @@ void ResultWidget::setMisfitData(const QVector<double> &iterations, const QVecto
     misfitPlot->setData(iterations, misfits);
 }
 
-void ResultWidget::set2DResult(double x, double y, const QVector<QPointF> &contour) {
-    result2DPlot->setResult(x, y, contour);
+void ResultWidget::set2DResult(double x, double y, const QVector<QPointF> &contour, const QVector<StationData> &stations) {
+    result2DPlot->setResult(x, y, contour, stations);
 }
 
-void ResultWidget::set3DResult(double x, double y, double z) {
-    result3DPlot->setResult(x, y, z);
+void ResultWidget::set3DResult(double x, double y, double z, const QVector<QPointF> &contour, const QVector<StationData> &stations) {
+    result3DPlot->setResult(x, y, z, contour, stations);
 }
